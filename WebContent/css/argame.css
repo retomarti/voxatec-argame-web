@@ -59,7 +59,7 @@ body {
 .panel-fixed {
 	min-height: 220px;
 	max-height: 220px;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .panel-body {

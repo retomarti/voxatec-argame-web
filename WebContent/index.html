@@ -32,7 +32,9 @@
 		objects: null,
 		caches: null
 	};
+	
 	var ARGameApp=angular.module("ARGameApp", []);
+	
 	<!-- Retrieve browser objects from server -->
 	ARGameApp.run(function($http) {
 		$http.get("adventure-scenes.json").success(function(data) {
@@ -43,6 +45,7 @@
 			console.log(model);
 		});
 	}); 
+	
 	ARGameApp.controller("ARGameCtrl", 
 		function($scope) {
 			$scope.model = model;
