@@ -1,0 +1,75 @@
+[
+	{
+		"id": 1,
+		"name": "Die Suche nach dem Heiligen Gral",
+		"text": "Der Heilige Gral ist ein Mythos, der die christliche Menschheit seit den Kreuzz&uuml;gen fasziniert. Es gibt verschiedene Theorien, was sich hinter dem Gral verbirgt und wo und von wem er verborgen gehalten wird. Es existieren Aufzeichnungen, dass der Heilige Gral von den Tempelrittern nach den Kreuzz&uuml;gen von Jerusalem nach Europa gebracht wurde. Es wird vermutet, dass sein Aufenthaltsort in drei geheimen B&uuml;chern niedergeschrieben wurden. Eines der B&uuml;cher ist im Besitz der Tempelritter selber, eines wurde damals der Gilde der Astronomen und das dritte der Gemeinschaft der Magier &uuml;bergeben. Derjenige, welcher Zugang zu allen drei B&uuml;chern erh&auml;lt, verf&uuml;gt &uuml;ber s&auml;mtliche Hinweise zum Aufenthaltsort des Heiligen Grals.",
+		"storyList": [
+			{
+				"id": 1,
+				"name": "Das Buch der Tempelritter",
+				"text": "Der Legende nach brachte Parsifal den Heiligen Gral von Jerusalem nach Europa.",
+				"seqNr": 1,
+				"startCache": null,
+				"sceneList": [
+					{
+						"id": 1,
+						"name": "Buch",
+						"text": "Um das Buch der Tempelritter zu finden, musst du wichtige Artefakte des geheimen Ritterordens aufsp&uuml;ren und entschl&uuml;sseln. \nDer erste Artefakt enth&auml;lt einen wichtigen Hinweis, um verschl&uuml;sselte Botschaften zu verstehen.",
+						"cache": null,
+						"object3D": null,
+						"riddle": null
+					},
+					{
+						"id": 3,
+						"name": "Pergament",
+						"text": "Mit dem gefundenen Dokument bist du in der Lage die Bedeutung des n&auml;chsten Artefakts zu verstehen. Es ist deshalb wichtig, dass du das Dokument mit dir nimmst. Mach deshalb ein Foto des Dokuments. Der n&auml;chste Artefakt liefert dir Hinweise auf seinen Eigent&uuml;mer.",
+						"cache": null,
+						"object3D": null,
+						"riddle": null
+					},
+					{
+						"id": 4,
+						"name": "Parsifal's Schild",
+						"text": "Nachdem du nun im Besitz des Parsifal-Pergaments bist, musst du einen wichtigen Gegenstand seiner Tempelritter-Ausr&uuml;stung finden.",
+						"cache": null,
+						"object3D": null,
+						"riddle": null
+					},
+					{
+						"id": 5,
+						"name": "Lancelot's Schwert",
+						"text": "Die Ritter wussten sich gegen Feinde wehement zur Wehr zu setzen. Dazu verf&uuml;gten Sie &uuml;ber ausgezeichnete Waffen. Suche nun eine dieser Waffen und entschl&uuml;ssle dessen Botschaft.",
+						"cache": null,
+						"object3D": null,
+						"riddle": null
+					},
+					{
+						"id": 6,
+						"name": "Buch der Tempelritter",
+						"text": "Du hast dich als wahrer Ritter des Tempelordens erwiesen und bist kurz davor, den gr&ouml;ssten Schatz dieses Ordens zu finden. Halte Ausschau nach dem &#39;Buch der Tempelritter&#39; und entschl&uuml;ssle die darin enthaltene versteckte Botschaft.",
+						"cache": null,
+						"object3D": null,
+						"riddle": null
+					}
+				]
+			},
+			{
+				"id": 2,
+				"name": "Das Buch der Astronomen",
+				"text": "Im Jahr 1154 schrieb ein j&uuml;discher Astronom ein geheimes Dokument welches wichtige Hinweise auf einen mystischen Artefakt enthielten: den Heiligen Gral. Das Dokument beschrieb nicht direkt den geheimen Aufenthaltsort des Grals, es enthielt aber verschl&uuml;sselte Hinweise, wie man ihn finden kann. Der wichtigste Hinweis im Dokument war, dass es ein Buch der Astronomen g&auml;be, welches zusammen mit zwei anderen B&uuml;chern, den genauen Ort enth&uuml;llen. Dieses Buch der Astronomen fand auf verschleierten Pfaden den Weg nach Z&uuml;rich. Folge diesem Pfad und finde wichtige Hinweise zum Gral.",
+				"seqNr": 2,
+				"startCache": null,
+				"sceneList": [
+					{
+						"id": 2,
+						"name": "Dokument",
+						"text": "Dokument enth&auml;lt Hinweise zum n&auml;chsten Cache",
+						"cache": null,
+						"object3D": null,
+						"riddle": null
+					}
+				]
+			}
+		]
+	}
+]
