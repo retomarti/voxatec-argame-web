@@ -28,19 +28,31 @@
 <script type="text/javascript">
 	var model={
 		browserList: new Array(),
+		browserSelection: new Array(),
 		adventures: null,
 		objects: null,
-		caches: null
+		caches: null,
+		
+		setBrowserSelection:
+			function(inListNr, selectedObject) {
+				if (inListNr >=0 && inListNr <=2) {
+					this.browserSelection[inListNr] = selectedObject;
+				}
+				console.log(model);
+			}
 	};
 	
 	var ARGameApp=angular.module("ARGameApp", []);
 	
 	<!-- Retrieve browser objects from server -->
 	ARGameApp.run(function($http) {
-		$http.get("adventure-scenes.json").success(function(data) {
+		$http.get("http://localhost:9090/argame/adventure-scenes").success(function(data) {
 			model.browserList[0] = data;
 			model.browserList[1] = data[0].storyList;
 			model.browserList[2] = model.browserList[1][0].sceneList;
+			model.browserSelection[0] = data[0];
+			model.browserSelection[1] = undefined;
+			model.browserSelection[2] = undefined;
 			model.adventures = data;
 			console.log(model);
 		});
@@ -49,8 +61,8 @@
 	ARGameApp.controller("ARGameCtrl", 
 		function($scope) {
 			$scope.model = model;
-		}
-	);
+		});
+	
 </script>
 </head>
 
@@ -76,6 +88,7 @@
 					<li><a href="#caches">Caches</a></li>
 					<li><a href="#localisation">Localisation</a></li>
 				</ul>
+				<!-- 
 				<div class="pull-right">
 					<button type="button" class="btn btn-default">
 						<span class="fa fa-floppy-o"></span>
@@ -84,6 +97,7 @@
 						<span class="fa fa-trash-o"></span>
 					</button>
 				</div>
+				-->
 			</div>
 			<!--/.nav-collapse -->
 		</div>
@@ -104,7 +118,9 @@
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
-									<li class="list-group-item" ng-repeat="obj in model.browserList[0]">
+									<li class="list-group-item" ng-repeat="obj in model.browserList[0]" 
+																ng-click="model.setBrowserSelection(0,obj)"
+																ng-class="{selected: obj === model.browserSelection[0]}">
 										{{obj.name}}
 									</li>
 								</ul>
@@ -119,7 +135,9 @@
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
-									<li class="list-group-item" ng-repeat="obj in model.browserList[1]">
+									<li class="list-group-item" ng-repeat="obj in model.browserList[1]" 
+																ng-click="model.setBrowserSelection(1,obj)"
+																ng-class="{selected: obj === model.browserSelection[1]}">
 										{{obj.name}}
 									</li>
 								</ul>
@@ -134,7 +152,9 @@
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
-									<li class="list-group-item" ng-repeat="obj in model.browserList[2]">
+									<li class="list-group-item" ng-repeat="obj in model.browserList[2]" 
+																ng-click="model.setBrowserSelection(2,obj)"
+																ng-class="{selected: obj === model.browserSelection[2]}">
 										{{obj.name}}
 									</li>
 								</ul>
@@ -149,6 +169,7 @@
 					
 						<div class="panel-heading">
 							<span>Adventure</span>
+							<!-- 
 							<div class="pull-right">
 								<button type="button" class="btn btn-default">
 									<span class="fa fa-floppy-o"></span>
@@ -157,6 +178,7 @@
 									<span class="fa fa-trash-o"></span>
 								</button>
 							</div>
+						    -->
 						</div>
 						
 						<div class="panel-body content-panel">
@@ -164,14 +186,16 @@
 								<div class="form-group">
 									<label class="control-label col-sm-2" for="adv-name">Name:</label>
 									<div class="col-sm-10">
-										<input type="text" class="form-control" id="avd-name"
+										<input type="text" class="form-control" id="avd-name" value={{model.browserSelection[0].name}}
 											placeholder="Adventure name">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="control-label col-sm-2" for="adv-name">Text:</label>
 									<div class="col-sm-10">
-										<textarea class="form-control" rows="5" id="adv-text" cols=""></textarea>
+										<textarea class="form-control" rows="10" id="adv-text" cols="">
+											btoa({{model.browserSelection[0].text}})
+										</textarea>
 									</div>
 								</div>
 							</form>
