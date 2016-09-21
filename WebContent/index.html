@@ -30,15 +30,37 @@
 		browserList: new Array(),
 		browserSelection: new Array(),
 		adventures: null,
-		objects: null,
-		caches: null,
+		
+		selectedObject:
+			function() {
+				i = 0;
+				do {
+					selection = this.browserSelection[i];
+					i++; 
+				} while (i <= 2 && this.browserSelection[i] != null);
+				return selection;
+			},
 		
 		setBrowserSelection:
 			function(inListNr, selectedObject) {
 				if (inListNr >=0 && inListNr <=2) {
-					this.browserSelection[inListNr] = selectedObject;
+					// Set new selection
+					if (selectedObject != this.browserSelection[inListNr]) {
+						this.browserSelection[inListNr] = selectedObject;
+					}
+					// Set detail list content
+					if (inListNr==0) {
+						this.browserList[1] = selectedObject.storyList;
+						this.browserList[2] = null;
+						this.browserSelection[1] = null;
+						this.browserSelection[2] = null;
+					}
+					else if (inListNr==1) {
+						this.browserList[2] = selectedObject.sceneList;
+						this.browserSelection[2] = null;
+					}
 				}
-				console.log(model);
+				console.log(this.selectedObject());
 			}
 	};
 	
@@ -48,13 +70,12 @@
 	ARGameApp.run(function($http) {
 		$http.get("http://localhost:9090/argame/adventure-scenes").success(function(data) {
 			model.browserList[0] = data;
-			model.browserList[1] = data[0].storyList;
-			model.browserList[2] = model.browserList[1][0].sceneList;
-			model.browserSelection[0] = data[0];
-			model.browserSelection[1] = undefined;
-			model.browserSelection[2] = undefined;
+			model.browserList[1] = null;
+			model.browserList[2] = null;
+			model.browserSelection[0] = null;
+			model.browserSelection[1] = null;
+			model.browserSelection[2] = null;
 			model.adventures = data;
-			console.log(model);
 		});
 	}); 
 	
