@@ -23,13 +23,14 @@
 
 <!-- AngularJS files -->
 <script src="angular.js" type="text/javascript"></script>
+<script src="./ng-modules/angular-sanitize.js"></script>
 <!-- script src="ng-controllers/browserController.js"></script -->
   
 <script type="text/javascript">
 	var model={
 		browserList: new Array(),
 		browserSelection: new Array(),
-		adventures: null,
+		formField: new Array(),
 		
 		selectedObject:
 			function() {
@@ -39,6 +40,26 @@
 					i++; 
 				} while (i <= 2 && this.browserSelection[i] != null);
 				return selection;
+			},
+			
+		setFormFields:
+			function(object) {
+				// Set form fields
+				visibleProps = ['id','name','text','riddle'];
+				readOnlyProps = ['id'];
+				i = 0;
+				for (property in object) {					
+					// Property visible to user?
+					if (visibleProps.includes(property)) {
+						field = new Object();
+						field.name  = property;
+						field.value = object[property];
+						field.readonly = readOnlyProps.includes(property);
+						this.formField[i] = field;
+						i++;
+					}
+				}
+				console.log(this.formField);
 			},
 		
 		setBrowserSelection:
@@ -59,23 +80,24 @@
 						this.browserList[2] = selectedObject.sceneList;
 						this.browserSelection[2] = null;
 					}
-				}
+					
+					this.setFormFields(selectedObject);
+ 				}
 				// console.log(this.selectedObject());
 			}
 	};
 	
-	var ARGameApp=angular.module("ARGameApp", []);
+	var ARGameApp=angular.module("ARGameApp", ['ngSanitize']);
 	
-	<!-- Retrieve browser objects from server -->
+	<!-- Initially retrieve browser objects from server -->
 	ARGameApp.run(function($http) {
-		$http.get("http://localhost:9090/argame/adventure-scenes").success(function(data) {
-			model.browserList[0] = data;
+		$http.get("http://localhost:9090/argame/adventure-scenes").success(function(adventures) {
+			model.browserList[0] = adventures;
 			model.browserList[1] = null;
 			model.browserList[2] = null;
 			model.browserSelection[0] = null;
 			model.browserSelection[1] = null;
 			model.browserSelection[2] = null;
-			model.adventures = data;
 		});
 	}); 
 	
@@ -83,10 +105,14 @@
 		function($scope) {
 			$scope.model = model;
 			
-			$scope.propertyIsVisible =
-				function(propName) {
-					var visibleProps = ['id','name','text','riddle'];
-					return visibleProps.includes(propName);
+			$scope.isString = 
+				function(aString) {
+					return angular.isString(aString);
+				};
+
+			$scope.isNumber = 
+				function(aString) {
+					return angular.isNumber(aString);
 				};
 		}
 	);
@@ -211,28 +237,25 @@
 						
 						<div class="panel-body content-panel">
 							<form class="form-horizontal" action="">
-								<div class="form-group" ng-repeat="(propName, propValue) in model.selectedObject()">
-									<label class="control-label col-sm-2" ng-if="propertyIsVisible(propName)">
-										{{propName}}
+								<div class="form-group" ng-repeat="field in model.formField">
+									<label class="control-label col-sm-2">
+										{{field.name}}
 									</label>
-									<div class="col-sm-10" ng-if="propertyIsVisible(propName)">
-										<input type="text" class="form-control" id="{{propName}}" value="{{propValue}}"
-											placeholder="Property value">
+									<div class="col-sm-10" ng-if="isNumber(field.value)">
+										<input type="text" ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="{{field.name}}" value="{{field.value}}">
 									</div>
-								</div>
-								
-								<!-- 
-								<div class="form-group">
-									<label class="control-label col-sm-2" for="adv-name">Text:</label>
-									<div class="col-sm-10">
-										<textarea class="form-control" rows="10" id="adv-text" cols="">
-											btoa({{model.browserSelection[0].text}})
+									<div class="col-sm-10" ng-if="isString(field.value) && field.value.length<40">
+										<input type="text" ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="{{field.name}}" value="{{field.value}}">
+									</div>
+									<div class="col-sm-10" ng-if="isString(field.value) && field.value.length>=40">
+										<textarea ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" rows="10" id="adv-text" cols="">
+											{{field.value}}
 										</textarea>
 									</div>
 								</div>
-								--->
 							</form>
 						</div>
+						
 					</div>
 				</div>
 				
