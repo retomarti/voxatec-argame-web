@@ -22,102 +22,9 @@
 	<![endif]-->
 
 <!-- AngularJS files -->
-<script src="angular.js" type="text/javascript"></script>
+<script src="./ng-modules/angular.js" type="text/javascript"></script>
 <script src="./ng-modules/angular-sanitize.js"></script>
-<!-- script src="ng-controllers/browserController.js"></script -->
-  
-<script type="text/javascript">
-	var model={
-		browserList: new Array(),
-		browserSelection: new Array(),
-		formField: new Array(),
-		
-		selectedObject:
-			function() {
-				i = 0;
-				do {
-					selection = this.browserSelection[i];
-					i++; 
-				} while (i <= 2 && this.browserSelection[i] != null);
-				return selection;
-			},
-			
-		setFormFields:
-			function(object) {
-				// Set form fields
-				visibleProps = ['id','name','text','riddle'];
-				readOnlyProps = ['id'];
-				i = 0;
-				for (property in object) {					
-					// Property visible to user?
-					if (visibleProps.includes(property)) {
-						field = new Object();
-						field.name  = property;
-						field.value = object[property];
-						field.readonly = readOnlyProps.includes(property);
-						this.formField[i] = field;
-						i++;
-					}
-				}
-				console.log(this.formField);
-			},
-		
-		setBrowserSelection:
-			function(inListNr, selectedObject) {
-				if (inListNr >=0 && inListNr <=2) {
-					// Set new selection
-					if (selectedObject != this.browserSelection[inListNr]) {
-						this.browserSelection[inListNr] = selectedObject;
-					}
-					// Set detail list content
-					if (inListNr==0) {
-						this.browserList[1] = selectedObject.storyList;
-						this.browserList[2] = null;
-						this.browserSelection[1] = null;
-						this.browserSelection[2] = null;
-					}
-					else if (inListNr==1) {
-						this.browserList[2] = selectedObject.sceneList;
-						this.browserSelection[2] = null;
-					}
-					
-					this.setFormFields(selectedObject);
- 				}
-				// console.log(this.selectedObject());
-			}
-	};
-	
-	var ARGameApp=angular.module("ARGameApp", ['ngSanitize']);
-	
-	<!-- Initially retrieve browser objects from server -->
-	ARGameApp.run(function($http) {
-		$http.get("http://localhost:9090/argame/adventure-scenes").success(function(adventures) {
-			model.browserList[0] = adventures;
-			model.browserList[1] = null;
-			model.browserList[2] = null;
-			model.browserSelection[0] = null;
-			model.browserSelection[1] = null;
-			model.browserSelection[2] = null;
-		});
-	}); 
-	
-	ARGameApp.controller("ARGameCtrl", 
-		function($scope) {
-			$scope.model = model;
-			
-			$scope.isString = 
-				function(aString) {
-					return angular.isString(aString);
-				};
-
-			$scope.isNumber = 
-				function(aString) {
-					return angular.isNumber(aString);
-				};
-		}
-	);
-
-</script>
+<script src="./ng-modules/argame.js"></script>
 </head>
 
 <body ng-controller="ARGameCtrl">
@@ -160,7 +67,6 @@
 	<!-- Content Area -->
 	<div class="container-fluid">
 		<div class="content-area">
-
 			<div class="container-fluid">
 
 				<!-- Object Browser -->
@@ -172,9 +78,9 @@
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
-									<li class="list-group-item" ng-repeat="obj in model.browserList[0]" 
-																ng-click="model.setBrowserSelection(0,obj)"
-																ng-class="{selected: obj === model.browserSelection[0]}">
+									<li class="list-group-item" ng-repeat="obj in browserList[0]" 
+																ng-click="setBrowserSelection(0,obj)"
+																ng-class="{selected: obj === browserSelection[0]}">
 										{{obj.name}}
 									</li>
 								</ul>
@@ -189,9 +95,9 @@
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
-									<li class="list-group-item" ng-repeat="obj in model.browserList[1]" 
-																ng-click="model.setBrowserSelection(1,obj)"
-																ng-class="{selected: obj === model.browserSelection[1]}">
+									<li class="list-group-item" ng-repeat="obj in browserList[1]" 
+																ng-click="setBrowserSelection(1,obj)"
+																ng-class="{selected: obj === browserSelection[1]}">
 										{{obj.name}}
 									</li>
 								</ul>
@@ -206,9 +112,9 @@
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
-									<li class="list-group-item" ng-repeat="obj in model.browserList[2]" 
-																ng-click="model.setBrowserSelection(2,obj)"
-																ng-class="{selected: obj === model.browserSelection[2]}">
+									<li class="list-group-item" ng-repeat="obj in browserList[2]" 
+																ng-click="setBrowserSelection(2,obj)"
+																ng-class="{selected: obj === browserSelection[2]}">
 										{{obj.name}}
 									</li>
 								</ul>
@@ -222,7 +128,7 @@
 					<div class="panel panel-default">
 					
 						<div class="panel-heading">
-							<span>Adventure</span>
+							<span>{{selectedObjectType()}}</span>
 							<!-- 
 							<div class="pull-right">
 								<button type="button" class="btn btn-default">
@@ -236,8 +142,16 @@
 						</div>
 						
 						<div class="panel-body content-panel">
+							<!-- Tabs -->
+							<ul class="nav nav-tabs">
+								<li ng-class="{active: activeFormNr === 0}" ng-click="setActiveFormNr(0)"><a href="#">Description</a></li>
+								<li ng-class="{active: activeFormNr === 1}" ng-click="setActiveFormNr(1)"><a>Riddle</a></li>
+  								<li ng-class="{active: activeFormNr === 2}" ng-click="setActiveFormNr(2)"><a>Objects</a></li>
+  							</ul>
+  							
+  							<!-- Content Form -->
 							<form class="form-horizontal" action="">
-								<div class="form-group" ng-repeat="field in model.formField">
+								<div class="form-group" ng-repeat="field in activeForm()">
 									<label class="control-label col-sm-2">
 										{{field.name}}
 									</label>
