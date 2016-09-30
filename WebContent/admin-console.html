@@ -144,25 +144,22 @@
 						<div class="panel-body content-panel">
 							<!-- Tabs -->
 							<ul class="nav nav-tabs">
-								<li ng-class="{active: activeFormNr === 0}" ng-click="setActiveFormNr(0)"><a href="#">Description</a></li>
-								<li ng-class="{active: activeFormNr === 1}" ng-click="setActiveFormNr(1)"><a>Riddle</a></li>
-  								<li ng-class="{active: activeFormNr === 2}" ng-click="setActiveFormNr(2)"><a>Objects</a></li>
+								<li ng-if="formList[0] != null" ng-class="{active: isActiveForm(0)}" ng-click="setActiveForm(0)"><a>Description</a></li>
+								<li ng-if="formList[1] != null" ng-class="{active: isActiveForm(1)}" ng-click="setActiveForm(1)"><a>Riddle</a></li>
+  								<li ng-if="formList[2] != null" ng-class="{active: isActiveForm(2)}" ng-click="setActiveForm(2)"><a>Objects</a></li>
   							</ul>
   							
   							<!-- Content Form -->
 							<form class="form-horizontal" action="">
-								<div class="form-group" ng-repeat="field in activeForm()">
+								<div class="form-group" ng-repeat="field in activeForm">
 									<label class="control-label col-sm-2">
 										{{field.name}}
 									</label>
 									<div class="col-sm-10" ng-if="isNumber(field.value)">
 										<input type="text" ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="{{field.name}}" value="{{field.value}}">
 									</div>
-									<div class="col-sm-10" ng-if="isString(field.value) && field.value.length<40">
-										<input type="text" ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="{{field.name}}" value="{{field.value}}">
-									</div>
-									<div class="col-sm-10" ng-if="isString(field.value) && field.value.length>=40">
-										<textarea ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" rows="10" id="adv-text" cols="">
+									<div class="col-sm-10" ng-if="isString(field.value)">
+										<textarea elastic ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="adv-text" cols="">
 											{{field.value}}
 										</textarea>
 									</div>

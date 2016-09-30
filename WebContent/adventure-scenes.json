@@ -25,7 +25,12 @@
 						"text": "Mit dem gefundenen Dokument bist du in der Lage die Bedeutung des n&auml;chsten Artefakts zu verstehen. Es ist deshalb wichtig, dass du das Dokument mit dir nimmst. Mach deshalb ein Foto des Dokuments. Der n&auml;chste Artefakt liefert dir Hinweise auf seinen Eigent&uuml;mer.",
 						"cache": null,
 						"object3D": null,
-						"riddle": null
+						"riddle": {
+							"id": 1,
+							"challengeText": "Was bedeutet der chiffrierte Satz?",
+							"responseText": "Parsifal hat ihn gefunden",
+							"hintText": null
+						}
 					},
 					{
 						"id": 4,
@@ -33,7 +38,12 @@
 						"text": "Nachdem du nun im Besitz des Parsifal-Pergaments bist, musst du einen wichtigen Gegenstand seiner Tempelritter-Ausr&uuml;stung finden.",
 						"cache": null,
 						"object3D": null,
-						"riddle": null
+						"riddle": {
+							"id": 2,
+							"challengeText": "Welches war Parsifal&#39;s Wappentier?",
+							"responseText": "L&ouml;we",
+							"hintText": null
+						}
 					},
 					{
 						"id": 5,
@@ -41,7 +51,12 @@
 						"text": "Die Ritter wussten sich gegen Feinde wehement zur Wehr zu setzen. Dazu verf&uuml;gten Sie &uuml;ber ausgezeichnete Waffen. Suche nun eine dieser Waffen und entschl&uuml;ssle dessen Botschaft.",
 						"cache": null,
 						"object3D": null,
-						"riddle": null
+						"riddle": {
+							"id": 3,
+							"challengeText": "Wem geh&ouml;rt das gefundene Schwert?",
+							"responseText": "Lancelot",
+							"hintText": null
+						}
 					},
 					{
 						"id": 6,

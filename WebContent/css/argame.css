@@ -102,4 +102,7 @@ body {
 	padding-right: 5px;
 }
 
+textarea.form-control {
+  height: 100%;
+}
 
