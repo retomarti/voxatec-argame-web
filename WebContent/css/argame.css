@@ -51,13 +51,13 @@ body {
 }
 
 .panel-default {
-	border-color: #a94949;
+	border-color: #767b8e;
 }
 
 .panel-default>.panel-heading {
     color: #ffffff;
-    background-color: #a54e4e;
-    border-color: #920000;
+    background-color: #606186;
+    border-color: #3b4573;
 }
 
 .panel-fixed {
@@ -68,6 +68,12 @@ body {
 
 .panel-body {
 	padding: 0px;
+}
+
+.rm-btn-action {
+	border-color: #d2d2d2;
+	background-color: #4f4f6f;
+	color: #d2d2d2;
 }
 
 .list-group-item:first-child {
@@ -104,5 +110,9 @@ body {
 
 textarea.form-control {
   height: 100%;
+}
+
+textarea.ng-dirty {
+	background-color: #d9daff;
 }
 

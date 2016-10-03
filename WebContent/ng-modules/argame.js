@@ -12,14 +12,6 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 		$scope.activeForm = null;
 		
 		<!-- Methods -->
-		$scope.doInitRequest = 
-			function($http) {
-				$http.get("http://localhost:9090/argame/adventure-scenes").success(function(jsonResponse) {
-					$scope.browserList[0] = jsonResponse;
-					$scope.setBrowserSelection(0, jsonResponse);
-				});
-			};
-		
 		$scope.isString = 
 			function(aString) {
 				return angular.isString(aString);
@@ -30,8 +22,18 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 				return angular.isNumber(aString);
 			};
 			
-		$scope.toTrusted = function(html_code) {
-			    return $sce.trustAsHtml(html_code);
+		$scope.encodeHtml = 
+			function(string) {
+		    	var txt = document.createElement("textarea");
+		    	txt.value = string;
+				return txt.html();
+			}
+			
+		$scope.decodeHtml =
+			function(html) {
+			    var txt = document.createElement("textarea");
+			    txt.innerHTML = html;
+			    return txt.value;
 			};
 			
 		$scope.selectedObject =
@@ -71,7 +73,38 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 			function(formNr) {
 				return $scope.activeForm != undefined && $scope.activeForm != null && $scope.activeForm === $scope.formList[formNr];
 			};
-				
+			
+		$scope.setActiveFormDirty = 
+			function() {
+				$scope.activeForm.isDirty = true;
+				console.log("setActiveFormDirty");
+				console.log($scope.activeForm);
+			};
+			
+		$scope.setActiveFormClean = 
+			function() {
+				$scope.activeForm.isDirty = false;
+				console.log("setActiveFormClean");
+				console.log($scope.activeForm);
+			}
+			
+		$scope.isActiveFormDirty = 
+			function() {
+				return $scope.activeForm != undefined && $scope.activeForm != null &&
+				       $scope.activeForm.hasOwnProperty('isDirty') && $scope.activeForm.isDirty;
+			};
+					
+		$scope.saveActiveForm = 
+			function() {
+				if ($scope.isActiveFormDirty()) {
+					console.log("saving active form");
+					$scope.setActiveFormClean();
+				}
+				else {
+					console.log("nothing to save");
+				}
+			};
+			
 		$scope.setFormFieldsInForm =
 			function(object, formNr) {
 				// Create form fields
@@ -91,7 +124,7 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 						else {
 							field = new Object();
 							field.name  = property;
-							field.value = object[property];
+							field.value = $scope.decodeHtml(object[property]);
 							field.readonly = readOnlyProps.includes(property);
 							form[fieldNr] = field;
 							fieldNr++;
@@ -100,12 +133,13 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 				}
 				// Update form
 				$scope.formList[formNr] = form;
-				
-				// console.log($scope.formList);
 			};
 				
 		$scope.setFormFields =
 			function(object) {
+				if ($scope.isActiveFormDirty()) {
+					console.log("ask user to save active form first");
+				}
 				$scope.setFormFieldsInForm(object, 0);
 				$scope.setActiveForm(0);
 			};
@@ -131,7 +165,14 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 					// Set form content
 					$scope.setFormFields(selectedObject);
  				}
-				// console.log($scope.selectedObject());
+			};
+			
+		$scope.doInitRequest = 
+			function($http) {
+				$http.get("http://localhost:9090/argame/adventure-scenes").success(function(jsonResponse) {
+					$scope.browserList[0] = jsonResponse;
+					$scope.setBrowserSelection(0, jsonResponse[0]);
+				});
 			};
 			
 		// Do initial request for model
@@ -139,19 +180,31 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 	}
 ])
 
-.directive('elastic', ['$timeout',
-   function($timeout) {
-       return {
-           restrict: 'A',
-           link: function($scope, element) {
-               $scope.initialHeight = $scope.initialHeight || element[0].style.height;
-               var resize = function() {
-                   element[0].style.height = $scope.initialHeight;
-                   element[0].style.height = "" + element[0].scrollHeight + "px";
-               };
-               element.on("input change", resize);
-                   $timeout(resize, 0);
-               }
-           };
-       }
-   ]);
+<!-- Directive to autom. size height of a textarea element -->
+.directive('rmElastic', ['$timeout', function($timeout) {
+	return {
+		restrict: 'A',
+			link: function($scope, element) {
+				$scope.initialHeight = $scope.initialHeight || element[0].style.height;
+				var resize = function() {
+					element[0].style.height = $scope.initialHeight;
+					element[0].style.height = "" + element[0].scrollHeight + "px";
+				};
+				element.on("input change", resize);
+				$timeout(resize, 0);
+			}
+		};
+	}
+])
+   
+<!-- Directive to compile dynamically created elements -->
+.directive('rmCompile', function($compile, $timeout){
+	return{
+		restrict:'A',
+			link: function(scope,elem,attrs){
+				$timeout(function(){                
+                $compile(elem.contents())(scope);    
+            });
+        }        
+    };
+});

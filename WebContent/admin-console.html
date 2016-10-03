@@ -73,8 +73,12 @@
 				<div class="row">
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
-							<div class="panel-heading">
+							<div class="panel-heading clearfix">
 								Adventures
+							    <div class="pull-right">
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-minus"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-plus"></a>
+							    </div>						
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
@@ -90,8 +94,14 @@
 
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
-							<div class="panel-heading">
+							<div class="panel-heading clearfix">
 								Stories
+							    <div class="pull-right">
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-minus"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-plus"></a>
+							    </div>						
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
@@ -107,8 +117,14 @@
 
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
-							<div class="panel-heading">
+							<div class="panel-heading clearfix">
 								Scenes
+							    <div class="pull-right">
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-minus"></a>
+							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-plus"></a>
+							    </div>						
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
@@ -127,18 +143,11 @@
 				<div class="row content-form">
 					<div class="panel panel-default">
 					
-						<div class="panel-heading">
+						<div class="panel-heading clearfix">
 							<span>{{selectedObjectType()}}</span>
-							<!-- 
-							<div class="pull-right">
-								<button type="button" class="btn btn-default">
-									<span class="fa fa-floppy-o"></span>
-								</button>
-								<button type="button" class="btn btn-default">
-									<span class="fa fa-trash-o"></span>
-								</button>
-							</div>
-						    -->
+						    <div class="pull-right">
+						        <button type="button" ng-disabled="!isActiveFormDirty()" ng-click="saveActiveForm()" class="btn btn-default btn-sm rm-btn-action fa fa-floppy-o fa-2"></button>
+						    </div>						
 						</div>
 						
 						<div class="panel-body content-panel">
@@ -159,7 +168,7 @@
 										<input type="text" ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="{{field.name}}" value="{{field.value}}">
 									</div>
 									<div class="col-sm-10" ng-if="isString(field.value)">
-										<textarea elastic ng-bind-html="field.value" ng-disabled="field.readonly" class="form-control" id="adv-text" cols="">
+										<textarea rm-elastic ng-model="field.value" ng-change="setActiveFormDirty()" ng-disabled="field.readonly" class="form-control" id="adv-text">
 											{{field.value}}
 										</textarea>
 									</div>
