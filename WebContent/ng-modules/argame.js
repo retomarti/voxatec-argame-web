@@ -12,6 +12,17 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 		$scope.activeForm = null;
 		
 		<!-- Methods -->
+		$scope.doInitRequest = 
+			function($http) {
+				$http.get("http://localhost:9090/argame/adventure-scenes").success(function(jsonResponse) {
+					$scope.browserList[0] = jsonResponse;
+					$scope.setBrowserSelection(0, jsonResponse[0]);
+				});
+			};
+			
+		// Do initial request for model
+		$scope.doInitRequest($http);
+
 		$scope.isString = 
 			function(aString) {
 				return angular.isString(aString);
@@ -24,9 +35,7 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 			
 		$scope.encodeHtml = 
 			function(string) {
-		    	var txt = document.createElement("textarea");
-		    	txt.value = string;
-				return txt.html();
+				return $('<div/>').text(string).html();
 			}
 			
 		$scope.decodeHtml =
@@ -77,39 +86,30 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 		$scope.setActiveFormDirty = 
 			function() {
 				$scope.activeForm.isDirty = true;
-				console.log("setActiveFormDirty");
-				console.log($scope.activeForm);
 			};
 			
-		$scope.setActiveFormClean = 
+		$scope.isFormListDirty = 
 			function() {
-				$scope.activeForm.isDirty = false;
-				console.log("setActiveFormClean");
-				console.log($scope.activeForm);
+				// Check whether a form is marked as dirty
+				var isDirty = false;
+				for (formIdx in $scope.formList) {
+					isDirty = isDirty || ($scope.formList[formIdx].hasOwnProperty('isDirty') && $scope.formList[formIdx].isDirty);
+				}
+				return isDirty;
+			};
+				
+		$scope.setFormListClean = 
+			function() {
+				for (formIdx in $scope.formList) {
+					$scope.formList[formIdx].isDirty = false;
+				}
 			}
-			
-		$scope.isActiveFormDirty = 
-			function() {
-				return $scope.activeForm != undefined && $scope.activeForm != null &&
-				       $scope.activeForm.hasOwnProperty('isDirty') && $scope.activeForm.isDirty;
-			};
-					
-		$scope.saveActiveForm = 
-			function() {
-				if ($scope.isActiveFormDirty()) {
-					console.log("saving active form");
-					$scope.setActiveFormClean();
-				}
-				else {
-					console.log("nothing to save");
-				}
-			};
 			
 		$scope.setFormFieldsInForm =
 			function(object, formNr) {
 				// Create form fields
-				visibleProps = ['id','name','text', 'riddle', 'challengeText', 'responseText', 'hintText'];
-				readOnlyProps = ['id'];
+				var visibleProps = ['id','name','text', 'riddle', 'challengeText', 'responseText', 'hintText'];
+				var readOnlyProps = ['id'];
 				var form = new Array();
 
 				fieldNr = 0;
@@ -134,10 +134,20 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
 				// Update form
 				$scope.formList[formNr] = form;
 			};
+			
+		$scope.formFieldWithName = 
+			function(form, fieldName) {
+				for (fieldIdx in form) {
+					var field = form[fieldIdx];
+					if (field.name == fieldName) {
+						return field;
+					}
+				}
+			}
 				
 		$scope.setFormFields =
 			function(object) {
-				if ($scope.isActiveFormDirty()) {
+				if ($scope.isFormListDirty()) {
 					console.log("ask user to save active form first");
 				}
 				$scope.setFormFieldsInForm(object, 0);
@@ -167,16 +177,93 @@ ARGameApp.controller('ARGameCtrl', ['$scope', '$sce', '$http',
  				}
 			};
 			
-		$scope.doInitRequest = 
-			function($http) {
-				$http.get("http://localhost:9090/argame/adventure-scenes").success(function(jsonResponse) {
-					$scope.browserList[0] = jsonResponse;
-					$scope.setBrowserSelection(0, jsonResponse[0]);
-				});
+		$scope.saveAdventure =
+			function($http, adventure) {
+				var json = angular.toJson(adventure, false);
+				var url = "http://localhost:9090/argame/adventures/" + adventure.id;
+				var res = $http.put(url, json);
+				console.log(res);
 			};
 			
-		// Do initial request for model
-		$scope.doInitRequest($http);
+		$scope.saveStory = 
+			function($http, story) {
+				var json = angular.toJson(story, false);
+				var url = "http://localhost:9090/argame/stories/" + story.id;
+				var res = $http.put(url, json);
+				console.log(res);
+			};
+			
+		$scope.saveScene = 
+			function($http, scene) {
+				var json = angular.toJson(scene, false);
+				var url = "http://localhost:9090/argame/scenes/" + scene.id;
+				var res = $http.put(url, json);
+				console.log(res);
+			};
+			
+		$scope.updateObjectWithForm = 
+			function(object, formNr) {
+				// Update object with form field values
+				var visibleProps = ['id','name','text', 'riddle', 'challengeText', 'responseText', 'hintText'];
+				var readOnlyProps = ['id'];
+				var form = $scope.formList[formNr];
+
+				fieldNr = 0;
+				for (property in object) {					
+					// Property visible to user?
+					if (visibleProps.includes(property)) {
+						if (angular.isObject(object[property])) {
+							if (object[property] != "undefined" && object[property] != "null") {
+								$scope.updateObjectWithForm(object[property], formNr+1);
+							}
+						}
+						else {
+							var field = $scope.formFieldWithName(form, property);
+							if (!field.readonly) {
+								if ($scope.isString(field.value)) {
+									object[property] = $scope.encodeHtml(field.value);
+								}
+								else {
+									object[property] = field.value;
+								}
+							}
+						}
+					}
+				}
+			};
+			
+		$scope.updateObjectWithFormList =
+			function(object) {
+				$scope.updateObjectWithForm(object, 0);
+			};
+			
+		$scope.saveSelectedObject = 
+			function() {
+				if ($scope.isFormListDirty()) {
+					console.log("saving selected object");
+					
+					var obj = $scope.selectedObject();
+					
+					switch ($scope.selectedObjectType()) {
+						case "Adventure":
+							$scope.updateObjectWithFormList(obj);
+							$scope.saveAdventure($http, obj);
+							break;
+						case "Story":
+							$scope.updateObjectWithFormList(obj);
+							$scope.saveStory($http, obj);
+							break;
+						case "Scene":
+							$scope.updateObjectWithFormList(obj);
+							$scope.saveScene($http, obj);
+							break;
+					}
+					$scope.setFormListClean();
+				}
+				else {
+					console.log("nothing to save");
+				}
+			};
 	}
 ])
 
