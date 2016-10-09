@@ -4,15 +4,16 @@
   General Styles
 -----------------------------------------------------*/
 body {
-	background-color: #e4dada;
-	font-family: 'Roboto Condensed', sans-serif;
+	background-color: #f9f9f9;
+	font-family: 'Roboto', sans-serif;
+	font-weight: lighter;
 }
 
 /*-----------------------------------------------------
   Navigation Bar
 -----------------------------------------------------*/
 .navbar-inverse {
-    background-color: #700;
+    background-color: #252b58;
     border-color: #080808;
 }
 
@@ -50,14 +51,19 @@ body {
 	background-color: #d9daff;
 }
 
+.panel {
+	border-radius: 0px;
+}
+
 .panel-default {
-	border-color: #767b8e;
+	border-color: #b3b3b3;
+	box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
 }
 
 .panel-default>.panel-heading {
-    color: #ffffff;
-    background-color: #606186;
-    border-color: #3b4573;
+    color: black;
+    background-color: #d4d4d4;
+    border-color: #a7a7a7;
 }
 
 .panel-fixed {
@@ -66,14 +72,20 @@ body {
 	overflow-y: auto;
 }
 
+.panel-heading {
+	padding: 5px 15px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
 .panel-body {
 	padding: 0px;
 }
 
 .rm-btn-action {
-	border-color: #d2d2d2;
-	background-color: #4f4f6f;
-	color: #d2d2d2;
+	border-color: #bfbfbf;
+	background-color: #e1e1e4;
+	color: #585969;
 }
 
 .list-group-item:first-child {
@@ -114,5 +126,18 @@ textarea.form-control {
 
 textarea.ng-dirty {
 	background-color: #d9daff;
+}
+
+/*-----------------------------------------------------
+  Model Dialogs
+-----------------------------------------------------*/
+
+.modal-header {
+    background-color: #606186;
+    color: #ffffff;
+}
+
+.modal-body {
+	color: black;
 }
 

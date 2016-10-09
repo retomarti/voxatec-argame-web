@@ -1,67 +1,88 @@
 [
 	{
+		"className": "Adventure",
 		"id": 1,
 		"name": "Die Suche nach dem Heiligen Gral",
-		"text": "Der Heilige Gral ist ein Mythos, der die christliche Menschheit seit den Kreuzz&uuml;gen fasziniert. Es gibt verschiedene Theorien, was sich hinter dem Gral verbirgt und wo und von wem er verborgen gehalten wird. Es existieren Aufzeichnungen, dass der Heilige Gral von den Tempelrittern nach den Kreuzz&uuml;gen von Jerusalem nach Europa gebracht wurde. Es wird vermutet, dass sein Aufenthaltsort in drei geheimen B&uuml;chern niedergeschrieben wurden. Eines der B&uuml;cher ist im Besitz der Tempelritter selber, eines wurde damals der Gilde der Astronomen und das dritte der Gemeinschaft der Magier &uuml;bergeben. Derjenige, welcher Zugang zu allen drei B&uuml;chern erh&auml;lt, verf&uuml;gt &uuml;ber s&auml;mtliche Hinweise zum Aufenthaltsort des Heiligen Grals.",
+		"text": "Der Heilige Gral ist ein Mythos, der die christliche Menschheit seit den Kreuzz&uuml;gen fasziniert. Es gibt verschiedene Theorien, was sich hinter dem Gral verbirgt und wo und von wem er verborgen gehalten wird. Es existieren Aufzeichnungen, dass der Heilige Gral von den Tempelrittern nach den Kreuzz&uuml;gen von Jerusalem nach Europa gebracht wurde. Es wird vermutet, dass sein Aufenthaltsort in drei geheimen B&uuml;chern niedergeschrieben wurde. Eines der B&uuml;cher ist im Besitz der Tempelritter selber, eines wurde damals der Gilde der Astronomen und das dritte der Gemeinschaft der Magier &uuml;bergeben. Derjenige, welcher Zugang zu allen drei B&uuml;chern erh&auml;lt, verf&uuml;gt &uuml;ber s&auml;mtliche Hinweise zum Aufenthaltsort des Heiligen Grals.",
 		"storyList": [
 			{
+				"className": "Story",
 				"id": 1,
 				"name": "Das Buch der Tempelritter",
-				"text": "Der Legende nach brachte Parsifal den Heiligen Gral von Jerusalem nach Europa.",
+				"text": "Der Legende nach brachte Parsifal den Heiligen Gral von Jerusalem nach Europa. Wo der genaue Ort ist, hat er in einem geheimen Buch festgehalten.",
+				"adventureId": 1,
 				"seqNr": 1,
 				"startCache": null,
 				"sceneList": [
 					{
+						"className": "Scene",
 						"id": 1,
-						"name": "Buch",
+						"name": "Das Buch der Hinweise",
 						"text": "Um das Buch der Tempelritter zu finden, musst du wichtige Artefakte des geheimen Ritterordens aufsp&uuml;ren und entschl&uuml;sseln. \nDer erste Artefakt enth&auml;lt einen wichtigen Hinweis, um verschl&uuml;sselte Botschaften zu verstehen.",
+						"storyId": 0,
+						"seqNr": 1,
 						"cache": null,
 						"object3D": null,
 						"riddle": null
 					},
 					{
+						"className": "Scene",
 						"id": 3,
-						"name": "Pergament",
+						"name": "Das geheime Pergament",
 						"text": "Mit dem gefundenen Dokument bist du in der Lage die Bedeutung des n&auml;chsten Artefakts zu verstehen. Es ist deshalb wichtig, dass du das Dokument mit dir nimmst. Mach deshalb ein Foto des Dokuments. Der n&auml;chste Artefakt liefert dir Hinweise auf seinen Eigent&uuml;mer.",
+						"storyId": 0,
+						"seqNr": 2,
 						"cache": null,
 						"object3D": null,
 						"riddle": {
+							"className": "Riddle",
 							"id": 1,
 							"challengeText": "Was bedeutet der chiffrierte Satz?",
-							"responseText": "Parsifal hat ihn gefunden",
-							"hintText": null
+							"responseText": "Parsifal hat ihn gefunden.",
+							"hintText": "Den Hinweis zur Entschl&uuml;sselung des Textes findest du im &#39;Buch der Hinweise&#39;."
 						}
 					},
 					{
+						"className": "Scene",
 						"id": 4,
 						"name": "Parsifal's Schild",
 						"text": "Nachdem du nun im Besitz des Parsifal-Pergaments bist, musst du einen wichtigen Gegenstand seiner Tempelritter-Ausr&uuml;stung finden.",
+						"storyId": 0,
+						"seqNr": 3,
 						"cache": null,
 						"object3D": null,
 						"riddle": {
+							"className": "Riddle",
 							"id": 2,
 							"challengeText": "Welches war Parsifal&#39;s Wappentier?",
 							"responseText": "L&ouml;we",
-							"hintText": null
+							"hintText": "Du findest das Wappentier auf Parsifal&#39;s Schild."
 						}
 					},
 					{
+						"className": "Scene",
 						"id": 5,
 						"name": "Lancelot's Schwert",
 						"text": "Die Ritter wussten sich gegen Feinde wehement zur Wehr zu setzen. Dazu verf&uuml;gten Sie &uuml;ber ausgezeichnete Waffen. Suche nun eine dieser Waffen und entschl&uuml;ssle dessen Botschaft.",
+						"storyId": 0,
+						"seqNr": 4,
 						"cache": null,
 						"object3D": null,
 						"riddle": {
+							"className": "Riddle",
 							"id": 3,
-							"challengeText": "Wem geh&ouml;rt das gefundene Schwert?",
+							"challengeText": "Wem geh&ouml;rte das gefundene Schwert?",
 							"responseText": "Lancelot",
-							"hintText": null
+							"hintText": "Er ist ein Ritter der Tafelrunde."
 						}
 					},
 					{
+						"className": "Scene",
 						"id": 6,
-						"name": "Buch der Tempelritter",
+						"name": "Das Buch der Tempelritter",
 						"text": "Du hast dich als wahrer Ritter des Tempelordens erwiesen und bist kurz davor, den gr&ouml;ssten Schatz dieses Ordens zu finden. Halte Ausschau nach dem &#39;Buch der Tempelritter&#39; und entschl&uuml;ssle die darin enthaltene versteckte Botschaft.",
+						"storyId": 0,
+						"seqNr": 5,
 						"cache": null,
 						"object3D": null,
 						"riddle": null
@@ -69,22 +90,102 @@
 				]
 			},
 			{
-				"id": 2,
+				"className": "Story",
+				"id": 3,
+				"name": "Das Buch der Magier",
+				"text": "Some intro text...",
+				"adventureId": 1,
+				"seqNr": 3,
+				"startCache": null,
+				"sceneList": []
+			},
+			{
+				"className": "Story",
+				"id": 8,
 				"name": "Das Buch der Astronomen",
-				"text": "Im Jahr 1154 schrieb ein j&uuml;discher Astronom ein geheimes Dokument welches wichtige Hinweise auf einen mystischen Artefakt enthielten: den Heiligen Gral. Das Dokument beschrieb nicht direkt den geheimen Aufenthaltsort des Grals, es enthielt aber verschl&uuml;sselte Hinweise, wie man ihn finden kann. Der wichtigste Hinweis im Dokument war, dass es ein Buch der Astronomen g&auml;be, welches zusammen mit zwei anderen B&uuml;chern, den genauen Ort enth&uuml;llen. Dieses Buch der Astronomen fand auf verschleierten Pfaden den Weg nach Z&uuml;rich. Folge diesem Pfad und finde wichtige Hinweise zum Gral.",
-				"seqNr": 2,
+				"text": "Das Buch der Astronomen.",
+				"adventureId": 1,
+				"seqNr": 3,
+				"startCache": null,
+				"sceneList": []
+			}
+		]
+	},
+	{
+		"className": "Adventure",
+		"id": 3,
+		"name": "Kommissar Pfeiffer und die Tr&auml;ne der Sheherazade",
+		"text": "Ein spannendes Abenteuer bei dem du als Sherlock Holmes die Juwelendiebe durch die Stadt verfolgst und hoffentlich die Bande dingfest machen kannst.",
+		"storyList": [
+			{
+				"className": "Story",
+				"id": 5,
+				"name": "Der Juwelenraub",
+				"text": "Soeben wurde ein Raub&uuml;berfall auf ein Juweliergesch&auml;ft gemeldet.",
+				"adventureId": 3,
+				"seqNr": 1,
 				"startCache": null,
 				"sceneList": [
 					{
-						"id": 2,
-						"name": "Dokument",
-						"text": "Dokument enth&auml;lt Hinweise zum n&auml;chsten Cache",
+						"className": "Scene",
+						"id": 7,
+						"name": "Der Tatort",
+						"text": "Beim Juwelier &#39;Klunker&#39; findest du erste Hinweise auf den Raub&uuml;berfall.",
+						"storyId": 0,
+						"seqNr": 1,
 						"cache": null,
 						"object3D": null,
 						"riddle": null
 					}
 				]
+			},
+			{
+				"className": "Story",
+				"id": 6,
+				"name": "Spurensuche",
+				"text": "Sherlock Holmes untersucht den Ort des Verbrechens.",
+				"adventureId": 3,
+				"seqNr": 2,
+				"startCache": null,
+				"sceneList": []
+			},
+			{
+				"className": "Story",
+				"id": 7,
+				"name": "Das geheime Fach",
+				"text": "",
+				"adventureId": 3,
+				"seqNr": 3,
+				"startCache": null,
+				"sceneList": []
+			},
+			{
+				"className": "Story",
+				"id": 10,
+				"name": "Dr. Mabuse",
+				"text": "",
+				"adventureId": 3,
+				"seqNr": 4,
+				"startCache": null,
+				"sceneList": []
+			},
+			{
+				"className": "Story",
+				"id": 11,
+				"name": "Die Tr&auml;ne der Sheherazade",
+				"text": "",
+				"adventureId": 3,
+				"seqNr": 5,
+				"startCache": null,
+				"sceneList": []
 			}
 		]
+	},
+	{
+		"className": "Adventure",
+		"id": 4,
+		"name": "Kommissar Pfeiffer und der Orden der Templer",
+		"text": "Eine neue Geschichte.",
+		"storyList": []
 	}
 ]

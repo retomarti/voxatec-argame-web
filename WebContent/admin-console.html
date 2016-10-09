@@ -20,15 +20,15 @@
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
-
+	
 <!-- AngularJS files -->
 <script src="./ng-modules/angular.js" type="text/javascript"></script>
-<script src="./ng-modules/angular-sanitize.js"></script>
-<script src="./ng-modules/argame.js"></script>
+<script src="./ng-modules/angular-sanitize.js" type="text/javascript"></script>
+<script src="./ng-controllers/browserController.js" type="text/javascript"></script>
 </head>
 
-<body ng-controller="ARGameCtrl">
-	<!-- Navigation Bar -->
+<body ng-controller="BrowserCtrl">
+	<!-- Navigation Bar -------------------------------------------------------------------->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -64,21 +64,46 @@
 		</div>
 	</nav>
 
-	<!-- Content Area -->
+	<!-- Content Area ---------------------------------------------------------------------->
 	<div class="container-fluid">
 		<div class="content-area">
 			<div class="container-fluid">
 
-				<!-- Object Browser -->
+				<!-- Object Browser -------------------------------------------------------->
 				<div class="row">
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
 							<div class="panel-heading clearfix">
 								Adventures
 							    <div class="pull-right">
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-minus"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-plus"></a>
-							    </div>						
+							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" aria-hidden="true"></button>
+							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#advModal" aria-hidden="true"></button>
+
+									<!-- Adventure Creation Modal Dialog ---------------------------------------------->
+									<div id="advModal" class="modal fade" role="dialog">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+													<h4 class="modal-title">Adventure Creation</h4>
+												</div>
+												<div class="modal-body">
+													<p>Please enter an adventure name.</p>
+													<form class="form-horizontal" action="">
+														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">Cancel</button>
+													<button type="button" class="btn btn-default btn-primary"
+														data-dismiss="modal" ng-click="createNewAdventure(dialogInput)">Save</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>						
 							</div>
 							<div class="panel-body panel-fixed">
 								<ul class="list-group">
@@ -97,10 +122,35 @@
 							<div class="panel-heading clearfix">
 								Stories
 							    <div class="pull-right">
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-minus"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-plus"></a>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#storyModal" aria-hidden="true"></button>
+
+									<!-- Story Creation Modal Dialog ---------------------------------------------->
+									<div id="storyModal" class="modal fade" role="dialog">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+													<h4 class="modal-title">Story Creation</h4>
+												</div>
+												<div class="modal-body">
+													<p>Please enter a story name.</p>
+													<form class="form-horizontal" action="">
+														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">Cancel</button>
+													<button type="button" class="btn btn-default btn-primary"
+														data-dismiss="modal" ng-click="createNewStory(dialogInput)">Save</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
 							    </div>						
 							</div>
 							<div class="panel-body panel-fixed">
@@ -120,10 +170,34 @@
 							<div class="panel-heading clearfix">
 								Scenes
 							    <div class="pull-right">
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-minus"></a>
-							        <a href="#" class="btn btn-default btn-sm rm-btn-action fa fa-plus"></a>
+							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#sceneModal" aria-hidden="true"></button>
+
+									<!-- Scene Creation Modal Dialog ---------------------------------------------->
+									<div id="sceneModal" class="modal fade" role="dialog">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+													<h4 class="modal-title">Scene Creation</h4>
+												</div>
+												<div class="modal-body">
+													<p>Please enter a scene name.</p>
+													<form class="form-horizontal" action="">
+														<input id="sceneNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">Cancel</button>
+													<button type="button" class="btn btn-default btn-primary"
+														data-dismiss="modal" ng-click="createNewScene(dialogInput)">Save</button>
+												</div>
+											</div>
+										</div>
+									</div>
 							    </div>						
 							</div>
 							<div class="panel-body panel-fixed">
@@ -139,26 +213,27 @@
 					</div>
 				</div>
 
-				<!-- Selection Content -->
+				<!-- Selection Content ------------------------------------------------------------------------>
 				<div class="row content-form">
 					<div class="panel panel-default">
 					
 						<div class="panel-heading clearfix">
 							<span>{{selectedObjectType()}}</span>
 						    <div class="pull-right">
-						        <button type="button" ng-disabled="!isFormListDirty()" ng-click="saveSelectedObject()" class="btn btn-default btn-sm rm-btn-action fa fa-floppy-o fa-2"></button>
+						        <button type="button" ng-disabled="!isFormListDirty()" ng-click="saveSelectedObject()" class="btn rm-btn-action fa fa-floppy-o" aria-hidden="true">
+						        </button>
 						    </div>						
 						</div>
 						
 						<div class="panel-body content-panel">
-							<!-- Tabs -->
+							<!-- Form Header (Tabs) ----------------------------------------------------------->
 							<ul class="nav nav-tabs">
-								<li ng-if="formList[0] != null" ng-class="{active: isActiveForm(0)}" ng-click="setActiveForm(0)"><a>Description</a></li>
-								<li ng-if="formList[1] != null" ng-class="{active: isActiveForm(1)}" ng-click="setActiveForm(1)"><a>Riddle</a></li>
-  								<li ng-if="formList[2] != null" ng-class="{active: isActiveForm(2)}" ng-click="setActiveForm(2)"><a>Objects</a></li>
+								<li ng-if="formList[0] != null" ng-class="{active: isActiveForm(0)}" ng-click="setActiveForm(0)"><a>{{formNameList[0]}}</a></li>
+								<li ng-if="formList[1] != null" ng-class="{active: isActiveForm(1)}" ng-click="setActiveForm(1)"><a>{{formNameList[1]}}</a></li>
+  								<li ng-if="formList[2] != null" ng-class="{active: isActiveForm(2)}" ng-click="setActiveForm(2)"><a>{{formNameList[2]}}</a></li>
   							</ul>
   							
-  							<!-- Content Form -->
+  							<!-- Form Body -------------------------------------------------------------------->
 							<form class="form-horizontal" action="">
 								<div class="form-group" ng-repeat="field in activeForm">
 									<label class="control-label col-sm-2">
