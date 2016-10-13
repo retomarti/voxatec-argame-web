@@ -7,12 +7,17 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 	
 		<!-- Adventure Browser Model -->
 		$scope.prototypes = new Object();
+		$scope.object3DList = new Array();	  // object3D list used for object3D selection in scenes
+		
 		$scope.browserList = new Array();
 		$scope.browserSelection = new Array();
-		$scope.formNameList = new Array();
-		$scope.formList = new Array();
-		$scope.activeForm = null;
-		$scope.dialogInput = null;
+				
+		$scope.formLayoutRules = new Array(); // objects loaded from the layout-rules.json file
+		$scope.formObjectList = new Array();  // list of objects represented by the formLists
+		$scope.formList = new Array();		  // forms containing visible fields of objects in formObjectList
+		$scope.activeForm = null;			  // currently active form
+		
+		$scope.dialogInput = null;			  // value entered by user in input forms
 		
 		<!-- Methods ----------------------------------------------------------------------->
 		
@@ -25,7 +30,19 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					$scope.extractPrototypes(advPrototype);
 				});
 				
-				// Get all adventures & scenes
+				// Get the object layout rules
+				var url = "http://" + window.location.hostname + ":8080//com.voxatec.argame.web.admin/ng-controllers/layout-rules.json";
+				$http.get(url).success(function(jsonResponse) {
+					$scope.formLayoutRules = jsonResponse;
+				});
+				
+				// Get all object3D entities
+				url = "http://" + window.location.hostname + ":9090/argame/objects3D";
+				$http.get(url).success(function(jsonResponse) {
+					$scope.object3DList = $scope.deepDecodeJSON(jsonResponse);
+				});
+				
+				// Get all adventures, stories & scenes entities
 				url = "http://" + window.location.hostname + ":9090/argame/adventure-scenes";
 				$http.get(url).success(function(jsonResponse) {
 					// Extract adventure list
@@ -84,13 +101,18 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			};
 
 		$scope.isString = 
-			function(aString) {
-				return angular.isString(aString);
+			function(value) {
+				return angular.isString(value);
 			};
 
 		$scope.isNumber = 
-			function(aString) {
-				return angular.isNumber(aString);
+			function(value) {
+				return angular.isNumber(value);
+			};
+			
+		$scope.isDropDown =
+			function(value) {
+				return false;
 			};
 			
 		$scope.encodeHtml = 
@@ -169,11 +191,50 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					return null;
 			};
 			
+		$scope.objectLayoutRule = 
+			function(object) {
+				var rule = null;
+				if (angular.isDefined(object) && angular.isDefined(object.className)) {
+					rule = $scope.formLayoutRules[object.className].rule;
+				}
+				return rule;
+			};
+			
+		$scope.objectVisibleFields =
+			function(object) {
+				var visibleFields = null;
+				if (angular.isDefined(object.className)) {
+					visibleFields = $scope.formLayoutRules[object.className].visibleFields;
+				}
+				return visibleFields;
+			};
+			
+		$scope.objectReadOnlyFields =
+			function(object) {
+				var readOnlyFields = null;
+				if (angular.isDefined(object.className)) {
+					readOnlyFields = $scope.formLayoutRules[object.className].readOnlyFields;
+				}
+				return readOnlyFields;
+			};
+				
 		$scope.setActiveForm =
 			function(formNr) {
 				if (formNr >= 0) {
 					$scope.activeForm = $scope.formList[formNr];
 				}
+			};
+			
+		$scope.activeFormNr = 
+			function() {
+				var formNr=0;
+				while (formNr <= 2 && $scope.activeForm != $scope.formList[formNr]) {
+					formNr++;
+				}
+				if (formNr <= 2)
+					return formNr;
+				else
+					return -1;
 			};
 			
 		$scope.isActiveForm = 
@@ -203,11 +264,18 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				}
 			}
 		
+		$scope.resetFormList = 
+			function() {
+				$scope.formObjectList = new Array();
+				$scope.formList = new Array();
+				$scope.setFormListClean;
+			};
+		
 		$scope.setFormFieldsInForm =
 			function(object, formNr) {
 				// Create form fields
-				var visibleProps = ['id','name','text', 'riddle', 'challengeText', 'responseText', 'hintText', 'object3D'];
-				var readOnlyProps = ['id'];
+				var visibleFields = $scope.objectVisibleFields(object);
+				var readOnlyFields = $scope.objectReadOnlyFields(object);
 				var form = new Array();
 				var fNr = formNr;
 
@@ -215,7 +283,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				fieldNr = 0;
 				for (propName in object) {					
 					// Property visible to user?
-					if (visibleProps.includes(propName)) {
+					if (visibleFields.includes(propName)) {
 						if (angular.isObject(object[propName])) {
 							if (object[propName] != "undefined" && object[propName] != null) {
 								$scope.setFormFieldsInForm(object[propName], fNr+1);
@@ -226,7 +294,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 							field = new Object();
 							field.name  = propName;
 							field.value = object[propName];
-							field.readonly = readOnlyProps.includes(propName);
+							field.readonly = readOnlyFields.includes(propName);
 							form[fieldNr] = field;
 							fieldNr++;
 						}
@@ -235,7 +303,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 								
 				// Update form
 				$scope.formList[formNr] = form;
-				$scope.formNameList[formNr] = object.className;
+				$scope.formObjectList[formNr] = object;
 			};
 			
 		$scope.formFieldWithName = 
@@ -258,26 +326,44 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				$scope.setActiveForm(0);
 			};
 			
+		$scope.setFormObject =
+			function(object, formNr) {				
+				$scope.setFormFieldsInForm(object, formNr);
+				$scope.setActiveForm(formNr);
+				$scope.setActiveFormDirty();
+			};
+		
 		$scope.setBrowserSelection =
 			function(inListNr, selectedObject) {
 				if (inListNr >=0 && inListNr <=2) {
-					// Set new selection
-					if (selectedObject != $scope.browserSelection[inListNr]) {
-						$scope.browserSelection[inListNr] = selectedObject;
+					if (selectedObject == null) {
+						// Reset selection
+						if (inListNr >= 1) {
+							var newSelection = $scope.browserSelection[inListNr-1];
+							$scope.setBrowserSelection(inListNr-1, newSelection);
+						}
+						else
+							$scope.resetFormList();
 					}
-					// Set browser list contents
-					if (inListNr==0) {
-						$scope.browserList[1] = selectedObject.storyList;
-						$scope.browserList[2] = null;
-						$scope.browserSelection[1] = null;
-						$scope.browserSelection[2] = null;
+					else {
+						// Set new selection
+						if (selectedObject != $scope.browserSelection[inListNr]) {
+							$scope.browserSelection[inListNr] = selectedObject;
+						}
+						// Set browser list contents
+						if (inListNr==0) {
+							$scope.browserList[1] = selectedObject.storyList;
+							$scope.browserList[2] = null;
+							$scope.browserSelection[1] = null;
+							$scope.browserSelection[2] = null;
+						}
+						else if (inListNr==1) {
+							$scope.browserList[2] = selectedObject.sceneList;
+							$scope.browserSelection[2] = null;
+						}
+						// Set form content
+						$scope.setFormFields(selectedObject);
 					}
-					else if (inListNr==1) {
-						$scope.browserList[2] = selectedObject.sceneList;
-						$scope.browserSelection[2] = null;
-					}
-					// Set form content
-					$scope.setFormFields(selectedObject);
  				}
 			};
 			
@@ -288,7 +374,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				
 				if (adventure.id == null || adventure.id == -1) {
 					var url = "http://" + window.location.hostname + ":9090/argame/adventures";
-					var res = $http.post(url, json);					
+					var res = $http.post(url, json);		
 				}
 				else {
 					var url = "http://localhost:9090/argame/adventures/" + adventure.id;
@@ -332,22 +418,24 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		$scope.updateObjectWithForm = 
 			function(object, formNr) {
 				// Update object with form field values
-				var visibleProps = ['id','name','text', 'riddle', 'challengeText', 'responseText', 'hintText'];
-				var readOnlyProps = ['id'];
+				var visibleFields = $scope.objectVisibleFields(object);
 				var form = $scope.formList[formNr];
+				var layoutRule = $scope.objectLayoutRule(object);
+				var fNr = formNr;
 
 				fieldNr = 0;
 				for (property in object) {					
 					// Property visible to user?
-					if (visibleProps.includes(property)) {
+					if (visibleFields.includes(property)) {
 						if (angular.isObject(object[property])) {
 							if (object[property] != "undefined" && object[property] != "null") {
-								$scope.updateObjectWithForm(object[property], formNr+1);
+								$scope.updateObjectWithForm(object[property], fNr+1);
+								fNr++;
 							}
 						}
 						else {
 							var field = $scope.formFieldWithName(form, property);
-							if (!field.readonly) {
+							if (angular.isDefined(field) && (!field.readonly || layoutRule == 'showSelector')) {
 								object[property] = field.value;
 							}
 						}
@@ -393,15 +481,23 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				console.log("New adventure: " + adventureName);
 				
 				// create new adventure & insert it into browserList
-				var adventure = {"className": "Adventure",
-							     "id": null, 
-							     "name": adventureName, 
-							     "text": ""
-							    };
-				$scope.browserList[0].push(adventure);
-				var len = $scope.browserList[0].length;
-				$scope.setBrowserSelection(0, adventure);
+				var advPrototype = $scope.prototypes["Adventure"];
+				var adventure = (JSON.parse(JSON.stringify(advPrototype)));	// clone prototype instance
+
+				adventure.name = adventureName;
+				adventure.storyList = new Array();
 				
+				// Post it to service
+				var url = "http://" + window.location.hostname + ":9090/argame/adventures";
+				var json = $scope.deepEncodeJSON(adventure);
+				$http.post(url,json).then(function(jsonResponse) {
+					// extract new created adventure object
+					var newAdventure = $scope.deepDecodeJSON(jsonResponse).data;
+					adventure.id = newAdventure.id;
+					$scope.browserList[0].push(adventure);
+					$scope.setBrowserSelection(0, adventure);
+				});
+	
 				// Clear dialog input
 				$scope.dialogInput = null;
 			};
@@ -410,20 +506,29 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			function(storyName) {
 				console.log("New story: " + storyName);
 				
-				// get selected story
+				// get selected adventure
 				var adventure = $scope.browserSelection[0];
 				
 				// create new story & insert it into browserList
+				var storyPrototype = $scope.prototypes["Story"];
+				var story = (JSON.parse(JSON.stringify(storyPrototype)));	// clone prototype instance
 				var len = $scope.browserList[1].length;
-				var seqNr = len + 1;
-				var story = {"className": "Story",
-							 "id": null, 
-						     "adventureId": adventure.id, 
-						     "name": storyName, 
-						     "text": "", 
-						     "seqNr": seqNr};
-				$scope.browserList[1].push(story);
-				$scope.setBrowserSelection(1, story);
+				
+				story.adventureId = adventure.id;
+				story.name = storyName;
+				story.seqNr = len + 1;
+				story.sceneList = new Array();
+				
+				// Post it to service
+				var url = "http://" + window.location.hostname + ":9090/argame/stories";
+				var json = $scope.deepEncodeJSON(story);
+				$http.post(url,json).then(function(jsonResponse) {
+					// extract new created story object
+					var newStory = $scope.deepDecodeJSON(jsonResponse).data;
+					story.id = newStory.id;
+					$scope.browserList[1].push(story);
+					$scope.setBrowserSelection(1, story);
+				});
 				
 				// Clear dialog input
 				$scope.dialogInput = null;
@@ -437,22 +542,87 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				var story = $scope.browserSelection[1];
 				
 				// create new scene & insert it into browserList
+				var scenePrototype = $scope.prototypes["Scene"];
+				var scene = (JSON.parse(JSON.stringify(scenePrototype)));	// clone prototype instance
 				var len = $scope.browserList[2].length;
-				var seqNr = len + 1;
-				var scene = {"className": "Scene",
-							 "id": null, 
-						     "storyId": story.id, 
-						     "name": sceneName, 
-						     "text": "", 
-						     "seqNr": seqNr,
-						     "riddle": {"id": null, "challengeText": "", "responseText":"", "hintText":""},
-						     "object3D": {"id": null, "name": "", "text":""}
-						    };
-				$scope.browserList[2].push(scene);
-				$scope.setBrowserSelection(2, scene);
 				
+				scene.name = sceneName;
+				scene.storyId = story.id;
+				scene.seqNr = len + 1;
+				scene.object3D = null;
+				scene.riddle = null;
+				
+				// Post it to service
+				var url = "http://" + window.location.hostname + ":9090/argame/scenes";
+				var json = $scope.deepEncodeJSON(scene);
+				$http.post(url,json).then(function(jsonResponse) {
+					// extract new created scene object
+					var newScene = $scope.deepDecodeJSON(jsonResponse).data;
+					scene.id = newScene.id;
+					$scope.browserList[2].push(scene);
+					$scope.setBrowserSelection(2, scene);
+				});
+
 				// Clear dialog input
 				$scope.dialogInput = null;
+			};
+			
+		$scope.deleteStory =
+			function(story) {
+			
+				deleteStoryWithId = function(storyId) {
+					// Delete story via service
+					var url = "http://" + window.location.hostname + ":9090/argame/stories/" + storyId;
+					$http.delete(url).then(function(jsonResponse) {
+						// remove story in browser list
+						var idx = $scope.browserList[1].indexOf(story);
+						$scope.browserList[1].splice(idx,1);
+						$scope.setBrowserSelection(1, null);
+					});
+				};
+			
+				console.log("Delete story: " + story.name);
+				
+				if (story == null || story.id == -1)
+					return;   // nothing to do
+				
+				var sceneCnt = story.sceneList.length;
+				
+				if (sceneCnt > 0) {
+					// Delete all scenes first and then delete story (in callback of last scene delete)
+					for (idx in story.sceneList) {
+						$scope.deleteScene(story.sceneList[idx], function() {
+							// callback function
+							sceneCnt--;
+							if (sceneCnt == 0) {
+								deleteStoryWithId(story.id);
+							}
+						});
+					}
+				} else {
+					deleteStoryWithId(story.id);
+				}
+			};
+				
+		$scope.deleteScene =
+			function(scene, callbackFct) {
+				console.log("Delete scene: " + scene.name);
+				
+				if (scene == null || scene.id == -1)
+					return;   // nothing to do
+				
+				// Delete via service
+				var url = "http://" + window.location.hostname + ":9090/argame/scenes/" + scene.id;
+				$http.delete(url).then(function(jsonResponse) {
+					// remove scene in browser list
+					var idx = $scope.browserList[2].indexOf(scene);
+					$scope.browserList[2].splice(idx,1);
+					$scope.setBrowserSelection(2, null);
+					
+					if (callbackFct != null)
+						callbackFct();
+				});
+
 			};
 			
 }])

@@ -1,0 +1,68 @@
+{
+	"Adventure": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"name",
+			"text"
+		],
+		"readOnlyFields": [
+			"id"
+		]
+	},
+	"Story": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"name",
+			"text"
+		],
+		"readOnlyFields": [
+			"id"
+		]
+	},
+	"Scene": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"name",
+			"text",
+			"riddle",
+			"object3D"
+		],
+		"readOnlyFields": [
+			"id"
+		]
+	},
+	"Riddle": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"challengeText",
+			"responseText",
+			"hintText"
+		],
+		"readOnlyFields": [
+			"id"
+		]
+	},
+	"Object3D": {
+		"context": "FormEditor",
+		"rule": "showSelector",
+		"visibleFields": [
+			"id",
+			"name",
+			"text"
+		],
+		"readOnlyFields": [
+			"id",
+			"name",
+			"text"
+		]
+	}
+
+}
