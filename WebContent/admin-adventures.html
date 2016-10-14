@@ -76,11 +76,35 @@
 							<div class="panel-heading clearfix">
 								Adventures
 							    <div class="pull-right">
-							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" aria-hidden="true"></button>
-							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#advModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delAdvModal" aria-hidden="true"></button>
+							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newAdvModal" aria-hidden="true"></button>
+
+									<!-- Adventure Deletion Modal Dialog ---------------------------------------------->
+									<div id="delAdvModal" class="modal fade" role="dialog">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+													<h4 class="modal-title">Adventure Deletion</h4>
+												</div>
+												<div class="modal-body">
+													<p>Do you really want to delete the adventure with all stories?</p>
+													<form class="form-horizontal" action="">
+														<input id="advName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[0].name}}">
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">Cancel</button>
+													<button type="button" class="btn btn-default btn-primary"
+														data-dismiss="modal" ng-click="deleteAdventure(browserSelection[0])">Delete</button>
+												</div>
+											</div>
+										</div>
+									</div>
 
 									<!-- Adventure Creation Modal Dialog ---------------------------------------------->
-									<div id="advModal" class="modal fade" role="dialog">
+									<div id="newAdvModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
@@ -197,7 +221,7 @@
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down" aria-hidden="true"></button>
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delSceneModal" aria-hidden="true"></button>
-							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newSceneModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newSceneModal" aria-hidden="true"></button>
 
 									<!-- Scene Deletion Modal Dialog ---------------------------------------------->
 									<div id="delSceneModal" class="modal fade" role="dialog">
@@ -276,10 +300,10 @@
 						
 						<div class="panel-body content-panel">
 							<!-- Form Header (Tabs) ----------------------------------------------------------->
-							<ul class="nav nav-tabs">
-								<li ng-if="formList[0] != null" ng-class="{active: isActiveForm(0)}" ng-click="setActiveForm(0)"><a>{{formObjectList[0].className}}</a></li>
-								<li ng-if="formList[1] != null" ng-class="{active: isActiveForm(1)}" ng-click="setActiveForm(1)"><a>{{formObjectList[1].className}}</a></li>
-  								<li ng-if="formList[2] != null" ng-class="{active: isActiveForm(2)}" ng-click="setActiveForm(2)"><a>{{formObjectList[2].className}}</a></li>
+							<ul ng-if="formList[0]!=null && formList[1]!=null" class="nav nav-tabs">
+								<li ng-if="formList[0]!=null" ng-class="{active: isActiveForm(0)}" ng-click="setActiveForm(0)"><a>{{formObjectList[0].className}}</a></li>
+								<li ng-if="formList[1]!=null" ng-class="{active: isActiveForm(1)}" ng-click="setActiveForm(1)"><a>{{formObjectList[1].className}}</a></li>
+  								<li ng-if="formList[2]!=null" ng-class="{active: isActiveForm(2)}" ng-click="setActiveForm(2)"><a>{{formObjectList[2].className}}</a></li>
   							</ul>
   							
   							<!-- Form Body -------------------------------------------------------------------->
@@ -287,7 +311,7 @@
 								<!-- Dropdown menu for object selector -->
 								<div class="form-group" ng-if="objectLayoutRule(formObjectList[activeFormNr()]) == 'showSelector'">
 									<label class="control-label col-sm-2"> Selected Object </label>
-									<div class="dropdown col-sm-10">
+									<div class="dropdown col-sm-9">
 										<button class="btn btn-primary dropdown-toggle" type="button"
 											data-toggle="dropdown">
 											{{formObjectList[activeFormNr()].text}}
@@ -301,12 +325,12 @@
 								<!-- Form Fields -->
 								<div class="form-group" ng-repeat="field in activeForm">
 									<label class="control-label col-sm-2"> {{field.name}} </label>
-									<div class="col-sm-10" ng-if="isNumber(field.value)">
+									<div class="col-sm-9" ng-if="isNumber(field.value)">
 										<input type="text" ng-bind-html="field.value"
 											ng-disabled="field.readonly" class="form-control"
 											id="{{field.name}}" value="{{field.value}}">
 									</div>
-									<div class="col-sm-10" ng-if="isString(field.value)">
+									<div class="col-sm-9" ng-if="isString(field.value)">
 										<textarea rm-elastic ng-model="field.value"
 											ng-change="setActiveFormDirty()" ng-disabled="field.readonly"
 											class="form-control" id="adv-text">

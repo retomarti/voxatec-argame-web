@@ -268,6 +268,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			function() {
 				$scope.formObjectList = new Array();
 				$scope.formList = new Array();
+				$scope.activeForm = null;
 				$scope.setFormListClean;
 			};
 		
@@ -332,9 +333,15 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				$scope.setActiveForm(formNr);
 				$scope.setActiveFormDirty();
 			};
+			
+		$scope.resetBrowserSelection =
+			function () {
+				$scope.browserSelection = new Array();
+			};
 		
 		$scope.setBrowserSelection =
 			function(inListNr, selectedObject) {
+			
 				if (inListNr >=0 && inListNr <=2) {
 					if (selectedObject == null) {
 						// Reset selection
@@ -342,8 +349,10 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 							var newSelection = $scope.browserSelection[inListNr-1];
 							$scope.setBrowserSelection(inListNr-1, newSelection);
 						}
-						else
+						else {
+							$scope.resetBrowserSelection();
 							$scope.resetFormList();
+						}
 					}
 					else {
 						// Set new selection
@@ -549,8 +558,8 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				scene.name = sceneName;
 				scene.storyId = story.id;
 				scene.seqNr = len + 1;
-				scene.object3D = null;
-				scene.riddle = null;
+				// scene.object3D = null;
+				// scene.riddle = null;
 				
 				// Post it to service
 				var url = "http://" + window.location.hostname + ":9090/argame/scenes";
@@ -567,8 +576,45 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				$scope.dialogInput = null;
 			};
 			
+		$scope.deleteAdventure =
+			function(adventure) {
+			
+				deleteAdventureWithId = function(adventureId) {
+					// Delete adventure via service
+					var url = "http://" + window.location.hostname + ":9090/argame/adventures/" + adventureId;
+					$http.delete(url).then(function(jsonResponse) {
+						// remove adventure in browser list
+						var idx = $scope.browserList[0].indexOf(adventure);
+						$scope.browserList[0].splice(idx,1);
+						$scope.setBrowserSelection(0, null);
+					});
+				};
+			
+				console.log("Delete adventure: " + adventure.name);
+				
+				if (adventure == null || adventure.id == -1)
+					return;   // nothing to do
+				
+				var storyCnt = adventure.storyList.length;
+				
+				if (storyCnt > 0) {
+					// Delete all stories first and then delete adventure (in callback of last story delete)
+					for (idx in adventure.storyList) {
+						$scope.deleteStory(adventure.storyList[idx], function() {
+							// callback function
+							storyCnt--;
+							if (storyCnt == 0) {
+								deleteAdventureWithId(adventure.id);
+							}
+						});
+					}
+				} else {
+					deleteAdventureWithId(adventure.id);
+				}
+			};
+				
 		$scope.deleteStory =
-			function(story) {
+			function(story, callbackFct) {
 			
 				deleteStoryWithId = function(storyId) {
 					// Delete story via service
@@ -578,6 +624,10 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						var idx = $scope.browserList[1].indexOf(story);
 						$scope.browserList[1].splice(idx,1);
 						$scope.setBrowserSelection(1, null);
+						
+						// do callback
+						if (callbackFct != null)
+							callbackFct();
 					});
 				};
 			
@@ -602,6 +652,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				} else {
 					deleteStoryWithId(story.id);
 				}
+				
 			};
 				
 		$scope.deleteScene =
