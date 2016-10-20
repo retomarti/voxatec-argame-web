@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html ng-app="ARGameApp">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<title>AR-Game Admin Console</title>
+
+<!-- Stylesheets & Fonts & Icons-->
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/argame.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300" rel="stylesheet">
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	
+<!-- AngularJS files -->
+<script src="./ng-modules/angular.js" type="text/javascript"></script>
+<script src="./ng-modules/angular-sanitize.js" type="text/javascript"></script>
+<script src="./ng-controllers/objAdminController.js" type="text/javascript"></script>
+
+<!-- 3D Model Viewer (three) -->
+<script src="./three/three.js"></script>
+<script src="./three/Detector.js"></script>
+<script src="./three/OrbitControls.js"></script>
+<script src="./three/OBJLoader.js"></script>
+<script src="./three/MTLLoader.js"></script>
+    
+</head>
+
+<body ng-controller="BrowserCtrl">
+
+	<!-- Navigation Bar -------------------------------------------------------------------->
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">AR-Game</a>
+			</div>
+			<div id="navbar" class="collapse navbar-collapse navbar-menu">
+				<ul class="nav navbar-nav">
+					<li><a href="#"><span class="glyphicon glyphicon-king"></span></a></li>
+					<li><a href="admin-adventures.html">Adventures</a></li>
+					<li class="active"><a href="#objects">Objects</a></li>
+					<li><a href="admin-caches.html">Caches</a></li>
+					<li><a href="#localisation">Localisation</a></li>
+				</ul>
+				<!-- 
+				<div class="pull-right">
+					<button type="button" class="btn btn-default">
+						<span class="fa fa-floppy-o"></span>
+					</button>
+					<button type="button" class="btn btn-default">
+						<span class="fa fa-trash-o"></span>
+					</button>
+				</div>
+				-->
+			</div>
+			<!--/.nav-collapse -->
+		</div>
+	</nav>
+
+	<!-- Content Area ----------------------------------------------------------------------->
+	<div class="container-fluid">
+		<div class="content-area">
+			<!-- div class="container-fluid" -->
+
+				<!-- Object 3D Browser ------------------------------------------------------>
+				<!-- div class="row row-eq-height" --> 
+				
+					<div class="col-sm-4 browser-col">
+						<div class="panel panel-default">  <!-- panel-min-height -->
+							<div class="panel-heading clearfix">
+								3D Objects
+							    <div class="pull-right">
+							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
+							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newObj3DModal" aria-hidden="true"></button>
+
+									<!-- Object3D Deletion Modal Dialog ---------------------------------------------->
+									<div id="delObj3DModal" class="modal fade" role="dialog">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+													<h4 class="modal-title">Object Deletion</h4>
+												</div>
+												<div class="modal-body">
+													<p>Do you really want to delete the object with all files?</p>
+													<form class="form-horizontal" action="">
+														<input id="obj3DName" ng-disabled="true" type="text" class="form-control" value="{{object3DList[object3DSelIdx].name}}">
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">Cancel</button>
+													<button type="button" class="btn btn-default btn-primary"
+														data-dismiss="modal" ng-click="deleteObject3D(object3DList[object3DSelIdx])">Delete</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<!-- Object 3D Creation Modal Dialog ---------------------------------------------->
+									<div id="newObj3DModal" class="modal fade" role="dialog">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+													<h4 class="modal-title">3D Object Creation</h4>
+												</div>
+												<div class="modal-body">
+													<p>Please enter an object name.</p>
+													<form class="form-horizontal" action="">
+														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-default"
+														data-dismiss="modal">Cancel</button>
+													<button type="button" class="btn btn-default btn-primary"
+														data-dismiss="modal" ng-click="createNewObject3D(dialogInput)">Save</button>
+												</div>
+											</div>
+										</div>
+									</div>									
+									
+								</div>						
+							</div>
+							<div class="panel-body panel-fixed-high">
+								<ul class="list-group">
+									<li class="list-group-item" ng-repeat="obj in object3DList" 
+																ng-cloak
+																ng-click="setSelectedObject3D(obj)"
+																ng-class="{selected: obj === selectedObject3D()}">
+										{{obj.name}}
+									</li>
+								</ul>
+							</div>
+						</div>
+
+					</div>  <!-- Panel -->
+					
+					<div class="col-sm-8 browser-col">
+						<div class="panel panel-default">
+						
+							<div class="panel-heading clearfix">
+								Object Definition
+								<div class="pull-right">
+							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action fa fa-download" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action fa fa-upload" data-toggle="modal" data-target="#fileUploadModal" aria-hidden="true"></button>
+								</div>
+								
+								<!-- File Upload Modal Dialog ----------------------------------------------------->
+								<div id="fileUploadModal" class="modal fade" role="dialog">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+												<h4 class="modal-title">File Upload</h4>
+											</div>
+											<div class="modal-body">
+												<p>Please select the file to upload.</p>
+												<form class="form-horizontal" action="" method="post">
+													<input id="uploadFile" type="file" name="file" ng-model="selectedFile" autofocus/>
+												</form>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-default"
+													data-dismiss="modal">Cancel</button>
+												<button type="button" class="btn btn-default btn-primary"
+													data-dismiss="modal" ng-click="uploadVisibleFile()">Upload</button>
+											</div>
+										</div>
+									</div>
+								</div>	
+																
+							</div>
+							
+							<div class="panel-body panel-min-height">
+								<!-- Object Viewer header (Tabs) ------------------------------------------------------->
+								<ul id="edit-nav-tabs" class="nav nav-tabs">
+									<li ng-class="{active: activeTab=='attr'}" ng-click="setActiveTab('attr')"><a>Object Attributes</a></li>
+									<li ng-class="{active: activeTab=='3Dview'}" ng-click="setActiveTab('3Dview')"><a>3D Viewer</a></li>
+									<li ng-class="{active: activeTab=='objfile'}" ng-click="setActiveTab('objfile')"><a>OBJ File</a></li>
+									<li ng-class="{active: activeTab=='mtlfile'}" ng-click="setActiveTab('mtlfile')"><a>MTL File</a></li>
+	  								<li ng-class="{active: activeTab=='texfile'}" ng-click="setActiveTab('texfile')"><a>TEX File</a></li>
+	  							</ul>
+	  							
+	  							<!-- Object Viewer --------------------------------------------------------------------->
+								<div id="content-container">
+									<pre id="text-edit" ng-if="activeTab=='objfile' || activeTab=='mtlfile'">
+										{{visibleFile}}
+									</pre>
+									<div class="container fill" ng-if="activeTab=='objfile' || activeTab=='mtlfile'">
+										<div id="text-edit-fill"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				<!-- /div --> 
+		
+				
+			<!-- /div--> <!-- "container-fluid" -->
+		</div>
+
+	</div> <!-- "container-fluid" -->
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript">window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+	<script src="./bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="./patches/ie10-viewport-bug-workaround.js" type="text/javascript"></script>
+</body>
+
+</html>

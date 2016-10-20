@@ -44,9 +44,9 @@
 			<div id="navbar" class="collapse navbar-collapse navbar-menu">
 				<ul class="nav navbar-nav">
 					<li><a href="#"><span class="glyphicon glyphicon-king"></span></a></li>
-					<li class="active"><a href="#">Adventures</a></li>
+					<li><a href="admin-adventures.html">Adventures</a></li>
 					<li><a href="admin-objects.html">Objects</a></li>
-					<li><a href="admin-caches.html">Caches</a></li>
+					<li class="active"><a href="">Caches</a></li>
 					<li><a href="#localisation">Localisation</a></li>
 				</ul>
 				<!-- 
@@ -74,21 +74,21 @@
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
 							<div class="panel-heading clearfix">
-								Adventures
+								Cities
 							    <div class="pull-right">
 							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delAdvModal" aria-hidden="true"></button>
 							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newAdvModal" aria-hidden="true"></button>
 
-									<!-- Adventure Deletion Modal Dialog ---------------------------------------------->
+									<!-- City Deletion Modal Dialog ------------------------------------------------------------>
 									<div id="delAdvModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Adventure Deletion</h4>
+													<h4 class="modal-title">City Deletion</h4>
 												</div>
 												<div class="modal-body">
-													<p>Do you really want to delete the adventure with all stories?</p>
+													<p>Do you really want to delete the city with all caches?</p>
 													<form class="form-horizontal" action="">
 														<input id="advName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[0].name}}">
 													</form>
@@ -103,16 +103,16 @@
 										</div>
 									</div>
 
-									<!-- Adventure Creation Modal Dialog ---------------------------------------------->
+									<!-- City Creation Modal Dialog --------------------------------------------------------->
 									<div id="newAdvModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Adventure Creation</h4>
+													<h4 class="modal-title">City Creation</h4>
 												</div>
 												<div class="modal-body">
-													<p>Please enter an adventure name.</p>
+													<p>Please enter a city name.</p>
 													<form class="form-horizontal" action="">
 														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
 													</form>
@@ -145,25 +145,21 @@
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
 							<div class="panel-heading clearfix">
-								Stories
+								Cache Groups
 							    <div class="pull-right">
-							    	<!--  
-							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
-							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down" aria-hidden="true"></button>
-							        -->
 							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delStoryModal"  aria-hidden="true"></button>
 							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newStoryModal" aria-hidden="true"></button>
 
-									<!-- Story Deletion Modal Dialog ---------------------------------------------->
+									<!-- Cache Group Deletion Modal Dialog ---------------------------------------------->
 									<div id="delStoryModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Story Deletion</h4>
+													<h4 class="modal-title">Cache Group Deletion</h4>
 												</div>
 												<div class="modal-body">
-													<p>Do you really want to delete the story with all scenes?</p>
+													<p>Do you really want to delete the cache group with all caches?</p>
 													<form class="form-horizontal" action="">
 														<input id="storyName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[1].name}}">
 													</form>
@@ -178,16 +174,16 @@
 										</div>
 									</div>
 
-									<!-- Story Creation Modal Dialog ---------------------------------------------->
+									<!-- Cache Group Creation Modal Dialog ---------------------------------------------->
 									<div id="newStoryModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Story Creation</h4>
+													<h4 class="modal-title">Cache Group Creation</h4>
 												</div>
 												<div class="modal-body">
-													<p>Please enter a story name.</p>
+													<p>Please enter a cache group name.</p>
 													<form class="form-horizontal" action="">
 														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
 													</form>
@@ -220,7 +216,7 @@
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
 							<div class="panel-heading clearfix">
-								Scenes
+								Caches
 							    <div class="pull-right">
 							    	<!--  
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
@@ -229,16 +225,16 @@
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delSceneModal" aria-hidden="true"></button>
 							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newSceneModal" aria-hidden="true"></button>
 
-									<!-- Scene Deletion Modal Dialog ---------------------------------------------->
+									<!-- Cache Deletion Modal Dialog ---------------------------------------------->
 									<div id="delSceneModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Scene Deletion</h4>
+													<h4 class="modal-title">Cache Deletion</h4>
 												</div>
 												<div class="modal-body">
-													<p>Do you really want to delete the scene?</p>
+													<p>Do you really want to delete the cache?</p>
 													<form class="form-horizontal" action="">
 														<input id="sceneName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[2].name}}">
 													</form>
@@ -253,16 +249,16 @@
 										</div>
 									</div>
 
-									<!-- Scene Creation Modal Dialog ---------------------------------------------->
+									<!-- Cache Creation Modal Dialog ---------------------------------------------->
 									<div id="newSceneModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Scene Creation</h4>
+													<h4 class="modal-title">Cache Creation</h4>
 												</div>
 												<div class="modal-body">
-													<p>Please enter a scene name.</p>
+													<p>Please enter a cache name.</p>
 													<form class="form-horizontal" action="">
 														<input id="sceneNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
 													</form>
@@ -321,7 +317,7 @@
 									<div class="dropdown col-sm-9">
 										<button class="btn btn-primary dropdown-toggle" type="button" ng-cloak
 											data-toggle="dropdown">
-											{{formObjectList[activeFormNr()].name}}
+											{{formObjectList[activeFormNr()].text}}
 											<span class="caret"></span>
 										</button>
 										<ul class="dropdown-menu">
@@ -329,7 +325,7 @@
 										</ul>
 									</div>
 								</div>
-								<!-- Form Fields ------->
+								<!-- Form Fields -->
 								<div class="form-group" ng-repeat="field in activeForm">
 									<label class="control-label col-sm-2"> {{field.name}} </label>
 									<div class="col-sm-9" ng-if="isNumber(field.value)">

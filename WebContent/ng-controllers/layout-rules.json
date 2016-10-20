@@ -63,6 +63,46 @@
 			"name",
 			"text"
 		]
+	},
+	"City": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"name",
+			"country",
+			"zip"
+		],
+		"readOnlyFields": [
+			"id"
+		]
+	},
+	"CacheGroup": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"name"
+		],
+		"readOnlyFields": [
+			"id"
+		]
+	},
+	"Cache": {
+		"context": "FormEditor",
+		"rule": "showFields",
+		"visibleFields": [
+			"id",
+			"name",
+			"text",
+			"street",
+			"gps_lat",
+			"gps_long"
+		],
+		"readOnlyFields": [
+			"id"
+		]
 	}
+
 
 }
