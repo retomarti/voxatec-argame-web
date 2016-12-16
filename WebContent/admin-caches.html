@@ -9,10 +9,11 @@
 <title>AR-Game Admin Console</title>
 
 <!-- Stylesheets & Fonts & Icons-->
-<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="./css/argame.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300" rel="stylesheet">
-<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/css/argame.css" rel="stylesheet">
+<link href="./assets/css/font-roboto-condensed.css" rel="stylesheet">
+<link href="./assets/css/font-awesome.min.css" rel="stylesheet">
+<link href="./assets/css/ionicons.min.css" rel="stylesheet">
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -22,12 +23,14 @@
 	<![endif]-->
 	
 <!-- AngularJS files -->
-<script src="./ng-modules/angular.js" type="text/javascript"></script>
-<script src="./ng-modules/angular-sanitize.js" type="text/javascript"></script>
-<script src="./ng-controllers/advAdminController.js" type="text/javascript"></script>
+<script src="./webapp/shared/modules/angular.js" type="text/javascript"></script>
+<script src="./webapp/shared/modules/angular-sanitize.js" type="text/javascript"></script>
+<script src="./webapp/components/caches/cacheAdminController.js" type="text/javascript"></script>
+<script src="./webapp/shared/directives/forms.js" type="text/javascript"></script>
+<script src="./webapp/shared/directives/fileUploadDialogs.js" type="text/javascript"></script>
 </head>
 
-<body ng-controller="BrowserCtrl">
+<body ng-controller="CacheCtrl as ctrl">
 	<!-- Navigation Bar -------------------------------------------------------------------->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
@@ -46,13 +49,13 @@
 					<li><a href="#"><span class="glyphicon glyphicon-king"></span></a></li>
 					<li><a href="admin-adventures.html">Adventures</a></li>
 					<li><a href="admin-objects.html">Objects</a></li>
-					<li class="active"><a href="">Caches</a></li>
+					<li class="active"><a href="#">Caches</a></li>
 					<li><a href="#localisation">Localisation</a></li>
 				</ul>
 				<!-- 
 				<div class="pull-right">
 					<button type="button" class="btn btn-default">
-						<span class="fa fa-floppy-o"></span>
+						<span class="ion-upload"></span>
 					</button>
 					<button type="button" class="btn btn-default">
 						<span class="fa fa-trash-o"></span>
@@ -76,11 +79,11 @@
 							<div class="panel-heading clearfix">
 								Cities
 							    <div class="pull-right">
-							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delAdvModal" aria-hidden="true"></button>
-							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newAdvModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action ion-minus" data-toggle="modal" data-target="#delCityModal" aria-hidden="true"></button>
+							        <button type="button" class="btn btn-default btn-sm rm-btn-action ion-plus" data-toggle="modal" data-target="#newCityModal" aria-hidden="true"></button>
 
-									<!-- City Deletion Modal Dialog ------------------------------------------------------------>
-									<div id="delAdvModal" class="modal fade" role="dialog">
+									<!-- City Deletion Modal Dialog ---------------------------------------------->
+									<div id="delCityModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
@@ -90,21 +93,21 @@
 												<div class="modal-body">
 													<p>Do you really want to delete the city with all caches?</p>
 													<form class="form-horizontal" action="">
-														<input id="advName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[0].name}}">
+														<input id="cityName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[0].name}}">
 													</form>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-default"
 														data-dismiss="modal">Cancel</button>
 													<button type="button" class="btn btn-default btn-primary"
-														data-dismiss="modal" ng-click="deleteAdventure(browserSelection[0])">Delete</button>
+														data-dismiss="modal" ng-click="deleteCity(browserSelection[0])">Delete</button>
 												</div>
 											</div>
 										</div>
 									</div>
 
-									<!-- City Creation Modal Dialog --------------------------------------------------------->
-									<div id="newAdvModal" class="modal fade" role="dialog">
+									<!-- City Creation Modal Dialog ---------------------------------------------->
+									<div id="newCityModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
@@ -114,14 +117,14 @@
 												<div class="modal-body">
 													<p>Please enter a city name.</p>
 													<form class="form-horizontal" action="">
-														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+														<input id="cityNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
 													</form>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-default"
 														data-dismiss="modal">Cancel</button>
 													<button type="button" class="btn btn-default btn-primary"
-														data-dismiss="modal" ng-click="createNewAdventure(dialogInput)">Save</button>
+														data-dismiss="modal" ng-click="createNewCity(dialogInput)">Save</button>
 												</div>
 											</div>
 										</div>
@@ -145,54 +148,58 @@
 					<div class="col-sm-4 browser-col">
 						<div class="panel panel-default">
 							<div class="panel-heading clearfix">
-								Cache Groups
+								Cache-Groups
 							    <div class="pull-right">
-							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delStoryModal"  aria-hidden="true"></button>
-							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newStoryModal" aria-hidden="true"></button>
+							    	<!--  
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down" aria-hidden="true"></button>
+							        -->
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action ion-minus" data-toggle="modal" data-target="#delCacheGroupModal"  aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[0]==null" class="btn btn-default btn-sm rm-btn-action ion-plus" data-toggle="modal" data-target="#newCacheGroupModal" aria-hidden="true"></button>
 
-									<!-- Cache Group Deletion Modal Dialog ---------------------------------------------->
-									<div id="delStoryModal" class="modal fade" role="dialog">
+									<!-- CacheGroup Deletion Modal Dialog ---------------------------------------------->
+									<div id="delCacheGroupModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Cache Group Deletion</h4>
+													<h4 class="modal-title">Cache-Group Deletion</h4>
 												</div>
 												<div class="modal-body">
-													<p>Do you really want to delete the cache group with all caches?</p>
+													<p>Do you really want to delete the cache-group with all caches?</p>
 													<form class="form-horizontal" action="">
-														<input id="storyName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[1].name}}">
+														<input id="cacheGroupName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[1].name}}">
 													</form>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-default"
 														data-dismiss="modal">Cancel</button>
 													<button type="button" class="btn btn-default btn-primary"
-														data-dismiss="modal" ng-click="deleteStory(browserSelection[1])">Delete</button>
+														data-dismiss="modal" ng-click="deleteCacheGroup(browserSelection[1])">Delete</button>
 												</div>
 											</div>
 										</div>
 									</div>
 
-									<!-- Cache Group Creation Modal Dialog ---------------------------------------------->
-									<div id="newStoryModal" class="modal fade" role="dialog">
+									<!-- CacheGroup Creation Modal Dialog ---------------------------------------------->
+									<div id="newCacheGroupModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
 													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">Cache Group Creation</h4>
+													<h4 class="modal-title">Cache-Group Creation</h4>
 												</div>
 												<div class="modal-body">
-													<p>Please enter a cache group name.</p>
+													<p>Please enter a cache-group name.</p>
 													<form class="form-horizontal" action="">
-														<input id="advNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+														<input id="cacheGroupNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
 													</form>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-default"
 														data-dismiss="modal">Cancel</button>
 													<button type="button" class="btn btn-default btn-primary"
-														data-dismiss="modal" ng-click="createNewStory(dialogInput)">Save</button>
+														data-dismiss="modal" ng-click="createNewCacheGroup(dialogInput)">Save</button>
 												</div>
 											</div>
 										</div>
@@ -222,11 +229,11 @@
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-up" aria-hidden="true"></button>
 							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-arrow-down" aria-hidden="true"></button>
 							        -->
-							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delSceneModal" aria-hidden="true"></button>
-							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newSceneModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[2]==null" class="btn btn-default btn-sm rm-btn-action ion-minus" data-toggle="modal" data-target="#delCacheModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="browserSelection[1]==null" class="btn btn-default btn-sm rm-btn-action ion-plus" data-toggle="modal" data-target="#newCacheModal" aria-hidden="true"></button>
 
 									<!-- Cache Deletion Modal Dialog ---------------------------------------------->
-									<div id="delSceneModal" class="modal fade" role="dialog">
+									<div id="delCacheModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
@@ -236,21 +243,21 @@
 												<div class="modal-body">
 													<p>Do you really want to delete the cache?</p>
 													<form class="form-horizontal" action="">
-														<input id="sceneName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[2].name}}">
+														<input id="cacheName" ng-disabled="true" type="text" class="form-control" value="{{browserSelection[2].name}}">
 													</form>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-default"
 														data-dismiss="modal">Cancel</button>
 													<button type="button" class="btn btn-default btn-primary"
-														data-dismiss="modal" ng-click="deleteScene(browserSelection[2])">Delete</button>
+														data-dismiss="modal" ng-click="deleteCache(browserSelection[2])">Delete</button>
 												</div>
 											</div>
 										</div>
 									</div>
 
 									<!-- Cache Creation Modal Dialog ---------------------------------------------->
-									<div id="newSceneModal" class="modal fade" role="dialog">
+									<div id="newCacheModal" class="modal fade" role="dialog">
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
@@ -260,14 +267,14 @@
 												<div class="modal-body">
 													<p>Please enter a cache name.</p>
 													<form class="form-horizontal" action="">
-														<input id="sceneNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
+														<input id="cacheNameInput" type="text" class="form-control" ng-model="dialogInput" autofocus>
 													</form>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-default"
 														data-dismiss="modal">Cancel</button>
 													<button type="button" class="btn btn-default btn-primary"
-														data-dismiss="modal" ng-click="createNewScene(dialogInput)">Create</button>
+														data-dismiss="modal" ng-click="createNewCache(dialogInput)">Create</button>
 												</div>
 											</div>
 										</div>
@@ -296,52 +303,38 @@
 						<div class="panel-heading clearfix">
 							<span>{{selectedObjectType()}}</span>
 						    <div class="pull-right">
-						        <button type="button" ng-disabled="!isFormListDirty()" ng-click="saveSelectedObject()" class="btn rm-btn-action fa fa-floppy-o" aria-hidden="true">
-						        </button>
-						    </div>						
+						        <button ng-if="activeTabName=='attr'" type="button" ng-disabled="!isFormDirty()" ng-click="saveSelectedObject()" class="btn rm-btn-action ion-upload" aria-hidden="true"></button>
+							    <button ng-if="activeTabName!='attr'" type="button" ng-disabled="" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action ion-upload" data-toggle="modal" data-target="#fileUploadModal" aria-hidden="true"></button>
+						    </div>	
+						    
+						    <div id="fileUploadModal" class="modal fade" role="dialog">
+						    	<rm-file-upload-dialog upload-dialog-model="uploadDialogModel"></rm-file-upload-dialog>
+						    </div>				
 						</div>
 						
 						<div class="panel-body content-panel">
-							<!-- Form Header (Tabs) ----------------------------------------------------------->
-							<ul ng-if="formList[0]!=null && formList[1]!=null" class="nav nav-tabs">
-								<li ng-if="formList[0]!=null" ng-class="{active: isActiveForm(0)}" ng-click="setActiveForm(0)"><a>{{formObjectList[0].className}}</a></li>
-								<li ng-if="formList[1]!=null" ng-class="{active: isActiveForm(1)}" ng-click="setActiveForm(1)"><a>{{formObjectList[1].className}}</a></li>
-  								<li ng-if="formList[2]!=null" ng-class="{active: isActiveForm(2)}" ng-click="setActiveForm(2)"><a>{{formObjectList[2].className}}</a></li>
-  							</ul>
-  							
-  							<!-- Form Body -------------------------------------------------------------------->
-							<form class="form-horizontal" action="">
-								<!-- Dropdown menu for object selector -->
-								<div class="form-group" ng-if="objectLayoutRule(formObjectList[activeFormNr()]) == 'showSelector'">
-									<label class="control-label col-sm-2"> Selected Object </label>
-									<div class="dropdown col-sm-9">
-										<button class="btn btn-primary dropdown-toggle" type="button" ng-cloak
-											data-toggle="dropdown">
-											{{formObjectList[activeFormNr()].text}}
-											<span class="caret"></span>
-										</button>
-										<ul class="dropdown-menu">
-											<li ng-repeat="obj3D in object3DList"><a href="#" ng-click="setFormObject(obj3D,activeFormNr())" ng-cloak>{{obj3D.name}}</a></li>
-										</ul>
-									</div>
-								</div>
-								<!-- Form Fields -->
-								<div class="form-group" ng-repeat="field in activeForm">
-									<label class="control-label col-sm-2"> {{field.name}} </label>
-									<div class="col-sm-9" ng-if="isNumber(field.value)">
-										<input type="text" ng-bind-html="field.value"
-											ng-disabled="field.readonly" class="form-control" ng-cloak
-											id="{{field.name}}" value="{{field.value}}">
-									</div>
-									<div class="col-sm-9" ng-if="isString(field.value)">
-										<textarea rm-elastic ng-model="field.value"
-											ng-change="setActiveFormDirty()" ng-disabled="field.readonly" ng-cloak
-											class="form-control" id="adv-text">
-											{{field.value}}
-										</textarea>
-									</div>
-								</div>
-							</form>
+							<!-- Tabs -->
+							<ul id="" class="nav nav-tabs">
+								<li ng-class="{active: activeTabName=='attr'}" ng-click="setActiveTab('attr')"><a>{{selectedObjectType()}} Attributes</a></li>
+								<li ng-class="{active: activeTabName=='xmlfile'}" ng-if="selectedObjectType()=='CacheGroup'" ng-click="setActiveTab('xmlfile')"><a>Target Images XML File</a></li>
+								<li ng-class="{active: activeTabName=='datfile'}" ng-if="selectedObjectType()=='CacheGroup'" ng-click="setActiveTab('datfile')"><a>Target Images DAT File</a></li>
+								<li ng-class="{active: activeTabName=='targetImgfile'}" ng-if="selectedObjectType()=='Cache'" ng-click="setActiveTab('targetImgfile')"><a>Target Image</a></li>
+	 							</ul>
+
+							<!-- Attribute Form -->
+							<div id="form-edit" ng-if="activeTabName=='attr'">
+								<rm-form form-model="formModel"></rm-form>
+							</div>
+
+							<!-- Text Editor -->
+							<pre id="text-edit" ng-cloak ng-if="activeTabName=='xmlfile' || activeTabName=='datfile'">
+								{{visibleFile}}
+							</pre>
+	
+							<!-- Target Image Viewer ------->
+							<div id="image-view" ng-cloak ng-if="activeTabName=='targetImgfile'">
+								<img class="img-box" ng-src="{{targetImageURL}}">
+							</div>
 						</div>
 						
 					</div>
@@ -361,9 +354,9 @@
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
 	<script type="text/javascript">window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-	<script src="./bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="./assets/js/bootstrap.min.js" type="text/javascript"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-	<script src="./patches/ie10-viewport-bug-workaround.js" type="text/javascript"></script>
+	<script src="./webapp/shared/patches/ie10-viewport-bug-workaround.js" type="text/javascript"></script>
 </body>
 
 </html>

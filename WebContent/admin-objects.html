@@ -9,10 +9,11 @@
 <title>AR-Game Admin Console</title>
 
 <!-- Stylesheets & Fonts & Icons-->
-<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="./css/argame.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300" rel="stylesheet">
-<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+<link href="./assets/css/argame.css" rel="stylesheet">
+<link href="./assets/css/font-roboto-condensed.css" rel="stylesheet">
+<link href="./assets/css/font-awesome.min.css" rel="stylesheet">
+<link href="./assets/css/ionicons.min.css" rel="stylesheet">
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -22,16 +23,16 @@
 	<![endif]-->
 	
 <!-- AngularJS files -->
-<script src="./ng-modules/angular.js" type="text/javascript"></script>
-<script src="./ng-modules/angular-sanitize.js" type="text/javascript"></script>
-<script src="./ng-controllers/objAdminController.js" type="text/javascript"></script>
+<script src="./webapp/shared/modules/angular.js" type="text/javascript"></script>
+<script src="./webapp/shared/modules/angular-sanitize.js" type="text/javascript"></script>
+<script src="./webapp/components/objects3D/objAdminController.js" type="text/javascript"></script>
 
 <!-- 3D Model Viewer (three) -->
-<script src="./three/three.js"></script>
-<script src="./three/Detector.js"></script>
-<script src="./three/OrbitControls.js"></script>
-<script src="./three/OBJLoader.js"></script>
-<script src="./three/MTLLoader.js"></script>
+<script src="./webapp/components/objects3D/three/three.js"></script>
+<script src="./webapp/components/objects3D/three/Detector.js"></script>
+<script src="./webapp/components/objects3D/three/OrbitControls.js"></script>
+<script src="./webapp/components/objects3D/three/OBJLoader.js"></script>
+<script src="./webapp/components/objects3D/three/MTLLoader.js"></script>
     
 </head>
 
@@ -61,7 +62,7 @@
 				<!-- 
 				<div class="pull-right">
 					<button type="button" class="btn btn-default">
-						<span class="fa fa-floppy-o"></span>
+						<span class="ion-upload"></span>
 					</button>
 					<button type="button" class="btn btn-default">
 						<span class="fa fa-trash-o"></span>
@@ -74,20 +75,20 @@
 	</nav>
 
 	<!-- Content Area ----------------------------------------------------------------------->
-	<div class="container-fluid">
+	<div class="container-fluid full-height">
 		<div class="content-area">
 			<!-- div class="container-fluid" -->
 
 				<!-- Object 3D Browser ------------------------------------------------------>
 				<!-- div class="row row-eq-height" --> 
 				
-					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">  <!-- panel-min-height -->
+					<div class="col-sm-4">
+						<div class="panel panel-default full-height">  <!-- panel-min-height -->
 							<div class="panel-heading clearfix">
 								3D Objects
 							    <div class="pull-right">
-							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
-							        <button type="button" class="btn btn-default btn-sm rm-btn-action fa fa-plus" data-toggle="modal" data-target="#newObj3DModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action ion-minus" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
+							        <button type="button" class="btn btn-default btn-sm rm-btn-action ion-plus" data-toggle="modal" data-target="#newObj3DModal" aria-hidden="true"></button>
 
 									<!-- Object3D Deletion Modal Dialog ---------------------------------------------->
 									<div id="delObj3DModal" class="modal fade" role="dialog">
@@ -139,7 +140,7 @@
 									
 								</div>						
 							</div>
-							<div class="panel-body panel-fixed-high">
+							<div class="panel-body">
 								<ul class="list-group">
 									<li class="list-group-item" ng-repeat="obj in object3DList" 
 																ng-cloak
@@ -154,14 +155,15 @@
 					</div>  <!-- Panel -->
 					
 					<div class="col-sm-8 browser-col">
-						<div class="panel panel-default">
+						<div class="panel panel-default full-height">
 						
 							<div class="panel-heading clearfix">
 								Object Definition
 								<div class="pull-right">
-							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action fa fa-minus" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
-							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action fa fa-download" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
-							        <button type="button" ng-disabled="object3DSelIdx==-1" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action fa fa-upload" data-toggle="modal" data-target="#fileUploadModal" aria-hidden="true"></button>
+									<button type="button" ng-disabled="!isSelObject3DDirty() || activeTabName!='attr'" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action ion-upload" ng-click="saveSelectedObject3D()" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="object3DSelIdx==-1 || activeTabName=='attr' || activeTabName=='3Dview'" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action ion-minus" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="object3DSelIdx==-1 || activeTabName=='attr' || activeTabName=='3Dview'" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action ion-android-download" data-toggle="modal" data-target="#delObj3DModal" aria-hidden="true"></button>
+							        <button type="button" ng-disabled="object3DSelIdx==-1 || activeTabName=='attr' || activeTabName=='3Dview'" class="btn btn-default btn-sm rm-btn-action btn rm-btn-action ion-upload" data-toggle="modal" data-target="#fileUploadModal" aria-hidden="true"></button>
 								</div>
 								
 								<!-- File Upload Modal Dialog ----------------------------------------------------->
@@ -193,19 +195,77 @@
 							<div class="panel-body panel-min-height">
 								<!-- Object Viewer header (Tabs) ------------------------------------------------------->
 								<ul id="edit-nav-tabs" class="nav nav-tabs">
-									<li ng-class="{active: activeTab=='attr'}" ng-click="setActiveTab('attr')"><a>Object Attributes</a></li>
-									<li ng-class="{active: activeTab=='3Dview'}" ng-click="setActiveTab('3Dview')"><a>3D Viewer</a></li>
-									<li ng-class="{active: activeTab=='objfile'}" ng-click="setActiveTab('objfile')"><a>OBJ File</a></li>
-									<li ng-class="{active: activeTab=='mtlfile'}" ng-click="setActiveTab('mtlfile')"><a>MTL File</a></li>
-	  								<li ng-class="{active: activeTab=='texfile'}" ng-click="setActiveTab('texfile')"><a>TEX File</a></li>
+									<li ng-class="{active: activeTabName=='attr'}" ng-click="setActiveTab('attr')"><a>Object Attributes</a></li>
+									<li ng-class="{active: activeTabName=='3Dview'}" ng-click="setActiveTab('3Dview')"><a>3D Viewer</a></li>
+									<li ng-class="{active: activeTabName=='objfile'}" ng-click="setActiveTab('objfile')"><a>OBJ File</a></li>
+									<li ng-class="{active: activeTabName=='mtlfile'}" ng-click="setActiveTab('mtlfile')"><a>MTL File</a></li>
+	  								<li ng-class="{active: activeTabName=='texfile'}" ng-click="setActiveTab('texfile')"><a>TEX File</a></li>
 	  							</ul>
 	  							
 	  							<!-- Object Viewer --------------------------------------------------------------------->
 								<div id="content-container">
-									<pre id="text-edit" ng-if="activeTab=='objfile' || activeTab=='mtlfile'">
+									<div class="panel-body content-panel" ng-if="activeTabName=='attr'" >
+									
+										<!-- Object Attributes -->
+										<form name="obj3-form" novalidate class="form-horizontal" ng-cloak action="">
+											<!-- Form Fields -->
+											<div class="form-group">
+												<label class="control-label col-sm-2"> Id </label>
+												<div class="col-sm-9">
+													<input type="text" ng-bind-html="selectedObject().id"
+														ng-disabled="true" class="form-control" ng-cloak
+														id="obj3D-id" value="{{selectedObject3D().id}}">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-sm-2"> Name </label>
+												<div class="col-sm-9">
+													<textarea rm-elastic ng-model="selectedObject3D().name" ng-change="setSelObject3DDirty()" ng-cloak
+														class="form-control" id="obj3D-name">
+														{{selectedObject3D().name}}
+													</textarea>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-sm-2"> Text </label>
+												<div class="col-sm-9">
+													<textarea rm-elastic ng-model="selectedObject3D().text" ng-change="setSelObject3DDirty()" ng-cloak
+														class="form-control" id="obj3D-text">
+														{{selectedObject3D().text}}
+													</textarea>
+												</div>
+											</div>
+										</form>
+									</div>
+									
+									<!-- Text Editor -->
+									<pre id="text-edit" ng-cloak ng-if="activeTabName=='objfile' || activeTabName=='mtlfile'">
 										{{visibleFile}}
 									</pre>
-									<div class="container fill" ng-if="activeTab=='objfile' || activeTab=='mtlfile'">
+									
+									<!-- Texture image view -->
+									<div ng-if="activeTabName=='texfile'">
+										<form class="form-horizontal" action="">
+											<!-- Dropdown menu for texture selector -->
+											<div class="form-group tex-selector">
+												<label class="control-label col-sm-2"> Texture </label>
+												<div class="dropdown col-sm-9">
+													<button class="btn btn-primary dropdown-toggle" type="button" ng-cloak
+														data-toggle="dropdown">
+														{{selectedTex.name}}
+														<span class="caret"></span>
+													</button>
+													<ul class="dropdown-menu">
+														<li ng-repeat="texture in texFileList"><a href="#" ng-click="selectTexture(texture)" ng-cloak>{{texture.name}}</a></li>
+													</ul>
+												</div>
+											</div>
+											<!-- Texture image ------->
+											<img class="img-box" ng-src="{{texImageURL}}">
+										</form>
+									</div>
+									
+									<div class="container fill" ng-if="activeTabName!='attr' && activeTabName!='3Dview'">
 										<div id="text-edit-fill"></div>
 									</div>
 								</div>
@@ -214,7 +274,6 @@
 					</div>
 					
 				<!-- /div --> 
-		
 				
 			<!-- /div--> <!-- "container-fluid" -->
 		</div>
@@ -228,9 +287,9 @@
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
 	<script type="text/javascript">window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-	<script src="./bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="./assets/js/bootstrap.min.js" type="text/javascript"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-	<script src="./patches/ie10-viewport-bug-workaround.js" type="text/javascript"></script>
+	<script src="./webapp/shared/patches/ie10-viewport-bug-workaround.js" type="text/javascript"></script>
 </body>
 
 </html>
