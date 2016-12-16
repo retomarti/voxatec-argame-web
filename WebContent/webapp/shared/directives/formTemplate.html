@@ -1,0 +1,42 @@
+<!-- Form Header (Tabs) -->
+<ul ng-if="formModel.tabs[0]!=null && formModel.tabs[1]!=null" class="nav nav-tabs">
+	<li ng-if="formModel.tabs[0]!=null" ng-class="{active: formModel.isActiveTab(0)}" ng-click="formModel.setActiveTab(0)"><a>{{formModel.tabs[0].name}}</a></li>
+	<li ng-if="formModel.tabs[1]!=null" ng-class="{active: formModel.isActiveTab(1)}" ng-click="formModel.setActiveTab(1)"><a>{{formModel.tabs[1].name}}</a></li>
+	<li ng-if="formModel.tabs[2]!=null" ng-class="{active: formModel.isActiveTab(2)}" ng-click="formModel.setActiveTab(2)"><a>{{formModel.tabs[2].name}}</a></li>
+</ul>
+<!-- Form Body (Fields) -->
+<form class="form-horizontal" action="">
+	<!-- Form Fields ------->
+	<div class="form-group" ng-repeat="field in formModel.activeTab.fields">
+		<label class="control-label col-sm-2"> {{field.label}} </label>
+		
+		<!-- Single Value Field -->
+		<div class="col-sm-9" ng-if="field.type=='singleValueField' && field.valueType == 'String' || field.valueType == 'Number'">
+			<input type="text" ng-model="field.value" ng-disabled="field.readOnly" ng-change="formModel.setFieldDirty(field)"  class="form-control" ng-cloak
+				id="{{field.key}}" value="{{field.value}}">
+		</div>
+		<div class="col-sm-9" ng-if="field.type=='singleValueField' && field.valueType == 'Text'">
+			<textarea rm-elastic ng-model="field.value" ng-change="formModel.setFieldDirty(field)"  
+				ng-disabled="field.readOnly" ng-cloak class="form-control">
+				{{field.value}}
+			</textarea>
+		</div>
+		
+		<!-- Dropdown List -->
+		<div class="form-group" ng-if="field.type=='dropdownList'">
+			<div class="dropdown col-sm-9">
+				<button class="btn btn-primary dropdown-toggle" type="button" ng-cloak ng-change="formModel.setFieldDirty(field)" data-toggle="dropdown">
+					{{field.value}}
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li ng-repeat="listValue in field.valueList">
+						<a href="#" ng-click="" ng-cloak>
+						{{listValue[field.valueListProperty]}}
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</form>
