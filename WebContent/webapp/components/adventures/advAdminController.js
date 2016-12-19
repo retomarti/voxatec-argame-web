@@ -6,6 +6,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 	function($scope, $sce, $http) {
 	
 		<!-- Adventure Browser Model -->
+		$scope.proxy = null;
 		$scope.prototypes = new Object();
 		$scope.object3DList = new Array();	  // object3D list used for object3D selection in scenes
 		
@@ -23,37 +24,45 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		
 		$scope.doInitRequest = 
 			function($http) {
-				// Get all entity prototypes
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/prototypes";
+				// Get proxy definition
+				var url = "http://" + window.location.hostname + ":8080/com.voxatec.argame.web.admin/webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
-					var advPrototype = $scope.deepDecodeJSON(jsonResponse);
-					$scope.extractPrototypes(advPrototype);
+					$scope.proxy = $scope.deepDecodeJSON(jsonResponse);
+					
+					// Get all entity prototypes
+					var url = "http://" + $scope.proxy.restServer + "/prototypes";
+					$http.get(url).success(function(jsonResponse) {
+						var advPrototype = $scope.deepDecodeJSON(jsonResponse);
+						$scope.extractPrototypes(advPrototype);
+					});
+					
+					// Get all object3D entities
+					url = "http://" + $scope.proxy.restServer + "/objects3D";
+					$http.get(url).success(function(jsonResponse) {
+						$scope.object3DList = $scope.deepDecodeJSON(jsonResponse);
+					});
+					
+					// Get all adventures, stories & scenes entities
+					url = "http://" + $scope.proxy.restServer + "/adventure-scenes";
+					$http.get(url).success(function(jsonResponse) {
+						// Extract adventure list
+						var adventures = $scope.deepDecodeJSON(jsonResponse);
+						$scope.browserList[0] = adventures;
+						$scope.addMissingPrototypeFields(adventures);
+						
+						// Set browser selection
+						var sel = $scope.browserList[0][0];
+						$scope.setBrowserSelection(0, sel);
+					});
+
 				});
-				
+			
 				// Get the object layout rules
-				var url = "http://" + window.location.hostname + ":8080//com.voxatec.argame.web.admin/webapp/shared/layouts/layout-rules.json";
+				var url = "http://" + window.location.hostname + ":8080/com.voxatec.argame.web.admin/webapp/shared/layouts/layout-rules.json";
 				$http.get(url).success(function(jsonResponse) {
 					$scope.formLayoutRules = jsonResponse;
 				});
 				
-				// Get all object3D entities
-				url = "http://" + window.location.hostname + ":9090/argame-rest/objects3D";
-				$http.get(url).success(function(jsonResponse) {
-					$scope.object3DList = $scope.deepDecodeJSON(jsonResponse);
-				});
-				
-				// Get all adventures, stories & scenes entities
-				url = "http://" + window.location.hostname + ":9090/argame-rest/adventure-scenes";
-				$http.get(url).success(function(jsonResponse) {
-					// Extract adventure list
-					var adventures = $scope.deepDecodeJSON(jsonResponse);
-					$scope.browserList[0] = adventures;
-					$scope.addMissingPrototypeFields(adventures);
-					
-					// Set browser selection
-					var sel = $scope.browserList[0][0];
-					$scope.setBrowserSelection(0, sel);
-				});
 			};
 			
 		// Do initial request for model
@@ -382,11 +391,11 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				json = $scope.deepEncodeJSON(json);
 				
 				if (adventure.id == null || adventure.id == -1) {
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/adventures";
+					var url = "http://" + $scope.proxy.restServer + "/adventures";
 					var res = $http.post(url, json);		
 				}
 				else {
-					var url = "http://localhost:9090/argame-rest/adventures/" + adventure.id;
+					var url = "http://" + + $scope.proxy.restServer + "/adventures/" + adventure.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
@@ -398,11 +407,11 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				json = $scope.deepEncodeJSON(json);
 				
 				if (story.id == null || story.id == -1) {
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/stories";
+					var url = "http://" + $scope.proxy.restServer + "/stories";
 					var res = $http.post(url, json);					
 				}
 				else {
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/stories/" + story.id;
+					var url = "http://" + $scope.proxy.restServer + "/stories/" + story.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
@@ -414,11 +423,11 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				json = $scope.deepEncodeJSON(json);
 				
 				if (scene.id == null || scene.id == -1) {
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/scenes";
+					var url = "http://" + $scope.proxy.restServer + "/scenes";
 					var res = $http.post(url, json);					
 				}
 				else {
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/scenes/" + scene.id;
+					var url = "http://" + $scope.proxy.restServer + "/scenes/" + scene.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
@@ -497,7 +506,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				adventure.storyList = new Array();
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/adventures";
+				var url = "http://" + $scope.proxy.restServer + "/adventures";
 				var json = $scope.deepEncodeJSON(adventure);
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created adventure object
@@ -529,7 +538,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				story.sceneList = new Array();
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/stories";
+				var url = "http://" + $scope.proxy.restServer + "/stories";
 				var json = $scope.deepEncodeJSON(story);
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created story object
@@ -562,7 +571,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				// scene.riddle = null;
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/scenes";
+				var url = "http://" + $scope.proxy.restServer + "/scenes";
 				var json = $scope.deepEncodeJSON(scene);
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created scene object
@@ -581,7 +590,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			
 				deleteAdventureWithId = function(adventureId) {
 					// Delete adventure via service
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/adventures/" + adventureId;
+					var url = "http://" + $scope.proxy.restServer + "/adventures/" + adventureId;
 					$http.delete(url).then(function(jsonResponse) {
 						// remove adventure in browser list
 						var idx = $scope.browserList[0].indexOf(adventure);
@@ -618,7 +627,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			
 				deleteStoryWithId = function(storyId) {
 					// Delete story via service
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/stories/" + storyId;
+					var url = "http://" + $scope.proxy.restServer + "/stories/" + storyId;
 					$http.delete(url).then(function(jsonResponse) {
 						// remove story in browser list
 						var idx = $scope.browserList[1].indexOf(story);
@@ -663,7 +672,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					return;   // nothing to do
 				
 				// Delete via service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/scenes/" + scene.id;
+				var url = "http://" + $scope.proxy.restServer + "/scenes/" + scene.id;
 				$http.delete(url).then(function(jsonResponse) {
 					// remove scene in browser list
 					var idx = $scope.browserList[2].indexOf(scene);

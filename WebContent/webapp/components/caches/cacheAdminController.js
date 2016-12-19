@@ -6,6 +6,8 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 	function($scope, $sce, $http) {
 	
 		<!-- Cache Browser Model -->		
+		$scope.proxy = null;
+
 		$scope.browserList = new Array();
 		$scope.browserSelection = new Array();
 		
@@ -89,16 +91,22 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						
 		$scope.doInitRequest = 
 			function($http) {
-				// Get all city, cache-group & cache entities
-				url = "http://" + window.location.hostname + ":9090/argame-rest/city-caches";
+				// Get proxy definition
+				var url = "http://" + window.location.hostname + ":8080/com.voxatec.argame.web.admin/webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
-					// Extract city list
-					var cities = $scope.deepDecodeJSON(jsonResponse);
-					$scope.browserList[0] = cities;
-					
-					// Set browser selection
-					var sel = $scope.browserList[0][0];
-					$scope.setBrowserSelection(0, sel);
+					$scope.proxy = $scope.deepDecodeJSON(jsonResponse);
+			
+					// Get all city, cache-group & cache entities
+					url = "http://" + $scope.proxy.restServer + "/city-caches";
+					$http.get(url).success(function(jsonResponse) {
+						// Extract city list
+						var cities = $scope.deepDecodeJSON(jsonResponse);
+						$scope.browserList[0] = cities;
+						
+						// Set browser selection
+						var sel = $scope.browserList[0][0];
+						$scope.setBrowserSelection(0, sel);
+					});
 				});
 			};
 			
@@ -169,7 +177,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 		$scope.setupTargetImageForObject =
 			function(object) {
 				if (object != null && object.id != -1) {
-					$scope.targetImageURL = "http://" + window.location.hostname + ":9090/argame-rest/files/target-img/" + object.id;
+					$scope.targetImageURL = "http://" + $scope.proxy.restServer + "/files/target-img/" + object.id;
 				}
 				else {
 					$scope.targetImageURL = "";
@@ -274,12 +282,12 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				
 				if (city.id == null || city.id == -1) {
 					// New city -> POST
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/cities";
+					var url = "http://" + $scope.proxy.restServer + "/cities";
 					var res = $http.post(url, json);		
 				}
 				else {
 					// Existing city -> PUT
-					var url = "http://localhost:9090/argame-rest/cities/" + city.id;
+					var url = "http://" + $scope.proxy.restServer + "/cities/" + city.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
@@ -292,12 +300,12 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				
 				if (cacheGroup.id == null || cacheGroup.id == -1) {
 					// New cacheGroup -> POST
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/cache-groups";
+					var url = "http://" + $scope.proxy.restServer + "/cache-groups";
 					var res = $http.post(url, json);					
 				}
 				else {
 					// Existing cacheGroup -> PUT
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/cache-groups/" + cacheGroup.id;
+					var url = "http://" + $scope.proxy.restServer + "/cache-groups/" + cacheGroup.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
@@ -310,12 +318,12 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				
 				if (cache.id == null || cache.id == -1) {
 					// New cache -> POST
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/caches";
+					var url = "http://" + $scope.proxy.restServer + "/caches";
 					var res = $http.post(url, json);					
 				}
 				else {
 					// Existing cache -> PUT
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/caches/" + cache.id;
+					var url = "http://" + $scope.proxy.restServer + "/caches/" + cache.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
@@ -407,7 +415,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				city.cacheGroupList = new Array();
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/cities";
+				var url = "http://" + $scope.proxy.restServer + "/cities";
 				var json = $scope.deepEncodeJSON(city);
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created city object
@@ -438,7 +446,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				cacheGroup.cacheList = new Array();
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/cache-groups";
+				var url = "http://" + $scope.proxy.restServer + "/cache-groups";
 				var json = $scope.deepEncodeJSON(cacheGroup);
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created cacheGroup object
@@ -470,7 +478,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				cache.cacheGroupId = cacheGroup.id;
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/caches";
+				var url = "http://" + $scope.proxy.restServer + "/caches";
 				var json = $scope.deepEncodeJSON(cache);
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created cache object
@@ -491,7 +499,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				var imgFile = {"className": "File", "name": null, "mimeType": "image/*", "content": null};
 				imgFile.name = $scope.encodeHtml(fileName);
 				imgFile.content = $scope.encodeBase64(imageData);
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/files/target-img/" + object.id;
+				var url = "http://" + $scope.proxy.restServer + "/files/target-img/" + object.id;
 
 				var res = $http.put(url, imgFile)
 					.then(function(jsonResponse) {
@@ -520,7 +528,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				file.content = fileData;
 				file = $scope.deepEncodeJSON(file);
 						
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/files/target-xml/";
+				var url = "http://" + $scope.proxy.restServer + "/files/target-xml/";
 				$scope.visibleFile = fileData;
 
 				var res = $http.put(url, file);
@@ -533,7 +541,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				var datFile = {"className": "File", "name": null, "mimeType": "application/json", "content": null};
 				datFile.name = $scope.encodeHtml(fileName);
 				datFile.content = $scope.encodeBase64(imageData);
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/files/target-dat/" + object.id;
+				var url = "http://" + $scope.proxy.restServer + "/files/target-dat/" + object.id;
 
 				var res = $http.put(url, datFile)
 					.then(function(jsonResponse) {
@@ -621,7 +629,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 			
 				deleteCityWithId = function(cityId) {
 					// Delete city via service
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/cities/" + cityId;
+					var url = "http://" + $scope.proxy.restServer + "/cities/" + cityId;
 					$http.delete(url).then(function(jsonResponse) {
 						// remove city in browser list
 						var idx = $scope.browserList[0].indexOf(city);
@@ -658,7 +666,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 			
 				deleteCacheGroupWithId = function(cacheGroupId) {
 					// Delete cacheGroup via service
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/cache-groups/" + cacheGroupId;
+					var url = "http://" + $scope.proxy.restServer + "/cache-groups/" + cacheGroupId;
 					$http.delete(url).then(function(jsonResponse) {
 						// remove cacheGroup in browser list
 						var idx = $scope.browserList[1].indexOf(cacheGroup);
@@ -703,7 +711,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					return;   // nothing to do
 				
 				// Delete cache via service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/caches/" + cache.id;
+				var url = "http://" + $scope.proxy.restServer + "/caches/" + cache.id;
 				$http.delete(url).then(function(jsonResponse) {
 					// remove cache in browser list
 					var idx = $scope.browserList[2].indexOf(cache);
@@ -725,7 +733,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					file.content = fileData;
 					file = $scope.deepEncodeJSON(file);
 							
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/files/xml" + cacheGroupId;
+					var url = "http://" + $scope.proxy.restServer + "/files/xml" + cacheGroupId;
 					
 					$scope.xmlFile = fileData;
 					$scope.visibleFile = fileData;

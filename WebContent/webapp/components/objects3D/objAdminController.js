@@ -6,6 +6,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 	function($scope, $sce, $http) {
 	
 		<!-- Adventure Browser Model -->
+		$scope.proxy = null;
 		$scope.prototypes = new Object();
 		
 		$scope.object3DList = new Array();	  // object3D list used for object3D selection in scenes
@@ -28,20 +29,26 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		
 		$scope.doInitRequest = 
 			function($http) {
-				// Get the object layout rules
-				var url = "http://" + window.location.hostname + ":8080//com.voxatec.argame.web.admin/webapp/shared/layouts/layout-rules.json";
+				// Get proxy definition
+				var url = "http://" + window.location.hostname + ":8080/com.voxatec.argame.web.admin/webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
-					$scope.formLayoutRules = jsonResponse;
-				});
+					$scope.proxy = $scope.deepDecodeJSON(jsonResponse);
+
+					// Get the object layout rules
+					var url = "http://" + window.location.hostname + ":8080//com.voxatec.argame.web.admin/webapp/shared/layouts/layout-rules.json";
+					$http.get(url).success(function(jsonResponse) {
+						$scope.formLayoutRules = jsonResponse;
+					});
 			
-				// Get all object3D entities
-				url = "http://" + window.location.hostname + ":9090/argame-rest/objects3D";
-				$http.get(url).success(function(jsonResponse) {
-					$scope.object3DList = $scope.deepDecodeJSON(jsonResponse);
-					$scope.setSelectedObject3D($scope.object3DList[0]);
-					$scope.setActiveTab("attr");
-				});
+					// Get all object3D entities
+					url = "http://"  + $scope.proxy.restServer + "/objects3D";
+					$http.get(url).success(function(jsonResponse) {
+						$scope.object3DList = $scope.deepDecodeJSON(jsonResponse);
+						$scope.setSelectedObject3D($scope.object3DList[0]);
+						$scope.setActiveTab("attr");
+					});
 				
+				});
 			};
 			
 		// Do initial request for model
@@ -167,13 +174,13 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			
 				if (angular.isDefined(object) && object != null && object.id != -1) {
 					// request obj file from service
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/files/obj/" + object.id;
+					var url = "http://" + $scope.proxy.restServer + "/files/obj/" + object.id;
 					$http.get(url).success(function(response) {
 						$scope.objFile = $scope.decodeHtml(response);
 					});
 
 					// request mtl file from service
-					var url = "http://" + window.location.hostname + ":9090/argame-rest/files/mtl/" + object.id;
+					var url = "http://" + $scope.proxy.restServer + "/files/mtl/" + object.id;
 					$http.get(url).success(function(response) {
 						$scope.mtlFile = $scope.decodeHtml(response);
 					});
@@ -226,7 +233,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						json = $scope.deepEncodeJSON(json);
 						
 						if (obj3D.id == null || obj3D.id == -1) {
-							var url = "http://" + window.location.hostname + ":9090/argame-rest/objects3D";
+							var url = "http://" + $scope.proxy.restServer + "/objects3D";
 
 							var res = $http.post(url, json)
 								.then(function(jsonResponse) {
@@ -239,7 +246,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 							);		
 						}
 						else {
-							var url = "http://localhost:9090/argame-rest/objects3D/" + obj3D.id;
+							var url = "http://" + $scope.proxy.restServer + "/objects3D/" + obj3D.id;
 							var res = $http.put(url, json);
 						}
 	
@@ -314,7 +321,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				    
 				    // model setup
 				    var mtlLoader = new THREE.MTLLoader();
-				    var baseUrl = "http://" + window.location.hostname + ":9090/argame-rest/files/";
+				    var baseUrl = "http://" + $scope.proxy.restServer + "/files/";
 				    mtlLoader.setPath(baseUrl + 'mtl/' + object3D.id + '/');
 				    mtlLoader.load("", function (materials) {
 
@@ -390,7 +397,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				if (texture != null) {
 					var object = $scope.selectedObject3D();
 					$scope.selectedTex = texture;
-					$scope.texImageURL = "http://" + window.location.hostname + ":9090/argame-rest/files/mtl/" + object.id + "/" + texture.name;
+					$scope.texImageURL = "http://" + $scope.proxy.restServer + "/files/mtl/" + object.id + "/" + texture.name;
 				}
 				else {
 					$scope.selectedTex = null;
@@ -405,7 +412,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				var imgFile = {"className": "File", "name": null, "mimeType": "image/*", "content": null};
 				imgFile.name = fileName;
 				imgFile.content = $scope.encodeBase64(imageData);
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/files/mtl/" + object.id + "/" + fileName;
+				var url = "http://" + $scope.proxy.restServer + "/files/mtl/" + object.id + "/" + fileName;
 
 				var res = $http.post(url, imgFile)
 					.then(function(jsonResponse) {
@@ -435,7 +442,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				file.content = fileData;
 				file = $scope.deepEncodeJSON(file);
 						
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/files/";
+				var url = "http://" + $scope.proxy.restServer + "/files/";
 						
 				if (fileType == "obj") {
 					url = url + "obj/" + object.id;
@@ -508,7 +515,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				object3D.text = "";
 				
 				// Post it to service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/objects3D";
+				var url = "http://" + $scope.proxy.restServer + "/objects3D";
 				var json = $scope.deepEncodeJSON(object3D);
 
 				$http.post(url,json)
@@ -540,7 +547,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					return;   // nothing to do
 			
 				// Delete via service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/objects3D/" + object3D.id;
+				var url = "http://" + $scope.proxy.restServer + "/objects3D/" + object3D.id;
 				$http.delete(url).then(function(jsonResponse) {
 					// remove object3D in browser list
 					var idx = $scope.object3DList.indexOf(object3D);
@@ -558,7 +565,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					return;   // nothing to do
 				
 				// Delete via service
-				var url = "http://" + window.location.hostname + ":9090/argame-rest/mtl/" + object3D.id + "/" + texFile.name;
+				var url = "http://" + $scope.proxy.restServer + "/mtl/" + object3D.id + "/" + texFile.name;
 				$http.delete(url)
 					.then(function(jsonResponse) {
 						// remove texFile in texture list
