@@ -61,7 +61,7 @@ rmFileUploadDialogs.directive('rmFileUploadDialog', function() {
 	var directive = {};
 
 	directive.restrict = 'E';	// restrict directive to elements
-	directive.templateUrl = "/com.voxatec.argame.web.admin/webapp/shared/directives/fileUploadDialogTemplate.html";
+	directive.templateUrl = "./webapp/shared/directives/fileUploadDialogTemplate.html";
 	
 	directive.scope = {
 		uploadDialogModel: "=uploadDialogModel"

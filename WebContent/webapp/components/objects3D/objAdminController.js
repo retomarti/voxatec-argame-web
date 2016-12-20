@@ -30,12 +30,12 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		$scope.doInitRequest = 
 			function($http) {
 				// Get proxy definition
-				var url = "http://" + window.location.hostname + ":8080/com.voxatec.argame.web.admin/webapp/shared/config/proxy.json";
+				var url = "./webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
 					$scope.proxy = $scope.deepDecodeJSON(jsonResponse);
 
 					// Get the object layout rules
-					var url = "http://" + window.location.hostname + ":8080//com.voxatec.argame.web.admin/webapp/shared/layouts/layout-rules.json";
+					var url = "./webapp/shared/layouts/layout-rules.json";
 					$http.get(url).success(function(jsonResponse) {
 						$scope.formLayoutRules = jsonResponse;
 					});

@@ -179,7 +179,7 @@ rmForms.directive('rmForm', function() {
 	var directive = {};
 
 	directive.restrict = 'E';	// restrict directive to elements
-	directive.templateUrl = "/com.voxatec.argame.web.admin/webapp/shared/directives/formTemplate.html";
+	directive.templateUrl = "./webapp/shared/directives/formTemplate.html";
 	
 	directive.scope = {
 		formModel: "=formModel"
