@@ -5,7 +5,7 @@
 -----------------------------------------------------*/
 body {
 	background-color: #f9f9f9;
-	font-family: 'Arial', sans-serif;
+	font-family: 'Helvetica-neue', sans-serif;
 	font-weight: lighter;
 }
 
@@ -62,14 +62,14 @@ body {
 }
 
 .panel-default {
-	border-color: #b3b3b3;
-	box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
+	border-color: #838cad;
+	/* box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12) */;
 }
 
 .panel-default>.panel-heading {
-    color: #475cd2;
-    background-color: #dcdcdc;
-    border-color: #a7a7a7;
+    color: white;
+    background-color: #a1a6d0;
+    border-color: #9aa1bb;
 }
 
 .panel-fixed {
@@ -95,7 +95,7 @@ body {
 }
 
 .rm-btn-action {
-	border-color: #bfbfbf;
+	border-color: #9898a5;
 	background-color: #f0f0f1;
 	color: #585969;
 }

@@ -1,4 +1,5 @@
 {
-	"presServer": "argame-web-admin.s3-website-us-west-2.amazonaws.com",
-	"restServer": "argame-rest-server.us-west-2.elasticbeanstalk.com"
+	"restServer": "localhost:9090/argame",
+	"localRestServer": "localhost:9090/argame",
+	"awsRestServer": "argame-rest-server.us-west-2.elasticbeanstalk.com"
 }

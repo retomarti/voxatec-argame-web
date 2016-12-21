@@ -441,6 +441,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				cacheGroup.className = 'CacheGroup';
 				cacheGroup.cityId = city.id;
 				cacheGroup.name = cacheGroupName;
+				cacheGroup.text = '';
 				cacheGroup.targetImageDatFileName = '';
 				cacheGroup.targetImageXmlFileName = '';
 				cacheGroup.cacheList = new Array();
