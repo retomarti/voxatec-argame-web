@@ -1,5 +1,6 @@
 {
 	"restServer": "localhost:9090/argame",
-	"localRestServer": "localhost:9090/argame",
+	"localEclipseRestServer": "localhost:9090/argame",
+	"localTomcatRestServer": "localhost:9090/argame-rest",
 	"awsRestServer": "argame-rest-server.us-west-2.elasticbeanstalk.com"
 }

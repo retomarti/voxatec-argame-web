@@ -521,38 +521,38 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 			};
 				
 		$scope.uploadXmlFile =
-			function(fileName, fileData, fileType, object) {
+			function(fileName, fileData, fileType, cacheGroup) {
 				
 				//send file to REST service
-				var file = {"className": "File", "name": null, "mimeType": "application/json", "content": null};
-				file.name = fileName;
-				file.content = fileData;
-				file = $scope.deepEncodeJSON(file);
-						
-				var url = "http://" + $scope.proxy.restServer + "/files/target-xml/";
-				$scope.visibleFile = fileData;
+				var xmlfile = {"className": "File", "name": null, "mimeType": "application/json", "content": null};
+				xmlfile.name = fileName;
+				xmlfile.content = fileData;
+				xmlfile = $scope.deepEncodeJSON(xmlfile);	
+				var url = "http://" + $scope.proxy.restServer + "/files/target-xml/" + cacheGroup.id;
+				
+				var res = $http.put(url, xmlfile)
+				.then(function(jsonResponse) {
 
-				var res = $http.put(url, file);
+				}, function errorCallback(response) {
+				    // called asynchronously if an error occurs
+				    // or server returns response with an error status.
+					console.log("error uploading target image dat file: " + response);
+				}
+			);
 			};
 			
 		$scope.uploadDatFile =
-			function(fileName, imageData, fileType, object) {
+			function(fileName, imageData, fileType, cacheGroup) {
 
 				//send file to REST service
 				var datFile = {"className": "File", "name": null, "mimeType": "application/json", "content": null};
 				datFile.name = $scope.encodeHtml(fileName);
 				datFile.content = $scope.encodeBase64(imageData);
-				var url = "http://" + $scope.proxy.restServer + "/files/target-dat/" + object.id;
+				var url = "http://" + $scope.proxy.restServer + "/files/target-dat/" + cacheGroup.id;
 
 				var res = $http.put(url, datFile)
 					.then(function(jsonResponse) {
-						// update dat file object
-						datFile = $scope.deepDecodeJSON(jsonResponse);
-						
-						// let image viewer show uploaded image
-						$scope.targetImageURL = url;
-						$scope.targetImageFile = datFile;
-						
+
 					}, function errorCallback(response) {
 					    // called asynchronously if an error occurs
 					    // or server returns response with an error status.
@@ -573,8 +573,6 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					if ($scope.activeTabName == 'xmlfile') {
 						// Its an .xml file
 						fileReader.onloadend = function() {
-							// Validate file
-							
 							// Upload text file
 							var fileName = file.name;
 							var textData = fileReader.result;
@@ -586,9 +584,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					
 					} else if ($scope.activeTabName == 'datfile') {
 							// Its an .dat file
-							fileReader.onloadend = function() {
-								// Validate file
-								
+							fileReader.onloadend = function() {								
 								// Upload binary file
 								var fileName = file.name;
 								var binData = fileReader.result;
@@ -601,7 +597,6 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					} else if ($scope.activeTabName == 'targetImgfile') {
 						// It's an image file (.jpg, .png)
 						fileReader.onloadend = function() {
-
 							// Upload image file
 							var fileName = file.name;
 							var imageData = fileReader.result;
@@ -724,24 +719,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				});
 
 			};
-			
-			$scope.uploadXmlFile =
-				function(fileName, fileData, fileType, cacheGroupId) {
-					
-					//send file to REST service
-					var file = {"className": "File", "name": null, "mimeType": "application/json", "content": null};
-					file.name = fileName;
-					file.content = fileData;
-					file = $scope.deepEncodeJSON(file);
-							
-					var url = "http://" + $scope.proxy.restServer + "/files/xml" + cacheGroupId;
-					
-					$scope.xmlFile = fileData;
-					$scope.visibleFile = fileData;
-
-					var res = $http.put(url, file);
-				};
-			
+						
 }])
 
 
