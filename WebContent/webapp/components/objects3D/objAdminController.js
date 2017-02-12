@@ -1,4 +1,4 @@
-var ARGameApp=angular.module("ARGameApp", ['ngSanitize']);
+var ARGameApp=angular.module("ARGameApp", ['ngSanitize','rmForms']);
 
 
 <!-- Browser Controller --------------------------------------------------------------------------------->
@@ -13,7 +13,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		$scope.object3DSelIdx = null;
 		
 		$scope.activeTabName = "attr";		  // 'attr', '3Dview' 'objfile', 'mtlfile', 'texfile'
-		
+
+		$scope.formModel = null;
+
 		$scope.objFile = null;
 		$scope.mtlFile = null;
 		$scope.texFile = null;
@@ -146,29 +148,20 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				}
 			};
 			
-		$scope.setSelObject3DClean =
-			function() {
-				var obj3D = $scope.selectedObject3D();
-				if (angular.isDefined(obj3D) && obj3D != null) {
-					obj3D.isDirty = false;
-					
-					// set form to pristine
-					// $scope.myform.$setPristine();
-				}
-			};
-			
 		$scope.isSelObject3DDirty =
 			function() {
-				var obj3D = $scope.selectedObject3D();
-				
-				if (angular.isDefined(obj3D) && obj3D != null) {
-					isDirty = obj3D.isDirty;
-					return angular.isDefined(isDirty) && isDirty;
-				}
+				if (angular.isDefined($scope.formModel) && $scope.formModel != null)
+					return $scope.formModel.isFormDirty();
 				else
 					return false;
 			};
 			
+		$scope.setSelObject3DClean =
+			function() {
+				if (angular.isDefined($scope.formModel) && $scope.formModel != null)
+					$scope.formModel.setFormClean();
+			};
+				
 		$scope.getObject3DFiles = 
 			function(object) {
 			
@@ -202,6 +195,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 							$scope.selectTexture(null);
 						}
 						$scope.getObject3DFiles(object);
+						$scope.setupFormModelForObject(object);
 						$scope.setActiveTab('attr');
 						return;
 					}
@@ -229,6 +223,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					var obj3D = $scope.selectedObject3D();
 					
 					if (angular.isDefined(obj3D) && obj3D != null) {
+						
+						$scope.updateObjectFromFormModel(obj3D, $scope.formModel);
+						
 						var json = angular.toJson(obj3D, false);
 						json = $scope.deepEncodeJSON(json);
 						
@@ -258,6 +255,35 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				}
 			};
 			
+		$scope.setupFormModelForObject =
+			function(object) {
+				if (object.className == 'Object3D') {
+					$scope.formModel = 
+						rmForms.FormModelBuilder()
+						.addTab('Attributes')
+						.addNumberField('id', 'Id', object.id, true)
+						.addStringField('name', 'Name', object.name, false)
+						.addStringField('objFileName', 'Obj File Name', object.objFileName, true)
+						.addStringField('mtlFileName', 'Mtl File Name', object.mtlFileName, true)
+						.addNumberField('objScaleFactor', 'Scale Factor', object.objScaleFactor, false)
+						.setActiveTab(0);
+				}
+			};
+				
+		$scope.updateObjectFromFormModel = 
+			function(object, formModel) {
+				// Update object with form field values
+				for (tabIdx in formModel.tabs) {
+					var tab = formModel.tabs[tabIdx];
+					for (fieldIdx in tab.fields) {
+						var field = tab.fields[fieldIdx];
+						if (field.dirty && angular.isDefined(object[field.key])) {
+							object[field.key] = field.value;
+						}
+					}
+				}
+			};
+
 		$scope.remove3DView = 
 			function() {
 				var container = document.getElementById("content-container");

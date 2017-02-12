@@ -168,6 +168,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						.addStringField('name', 'Name', object.name, false)
 						.addTextField('text', 'Text', object.text, false)
 						.addStringField('street', 'Street', object.street, false)
+						.addStringField('targetImageName', 'Target Image Name', object.targetImageName, false)
 						.addNumberField('gpsLatitude', 'GPS lat.', object.gpsLatitude, false)
 						.addNumberField('gpsLongitude', 'GPS long.', object.gpsLongitude, false)
 						.setActiveTab(0);
@@ -474,6 +475,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				cache.name = cacheName;
 				cache.text = '';
 				cache.street = '';
+				cache.targetImageName = '';
 				cache.gpsLatitude = 0.0000000;
 				cache.gpsLongitude = 0.0000000;
 				cache.cacheGroupId = cacheGroup.id;

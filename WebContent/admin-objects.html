@@ -26,6 +26,7 @@
 <script src="./webapp/shared/modules/angular.js" type="text/javascript"></script>
 <script src="./webapp/shared/modules/angular-sanitize.js" type="text/javascript"></script>
 <script src="./webapp/components/objects3D/objAdminController.js" type="text/javascript"></script>
+<script src="./webapp/shared/directives/forms.js" type="text/javascript"></script>
 
 <!-- 3D Model Viewer (three) -->
 <script src="./webapp/components/objects3D/three/three.js"></script>
@@ -205,37 +206,10 @@
 	  							<!-- Object Viewer --------------------------------------------------------------------->
 								<div id="content-container">
 									<div class="panel-body content-panel" ng-if="activeTabName=='attr'" >
-									
 										<!-- Object Attributes -->
-										<form name="obj3-form" novalidate class="form-horizontal" ng-cloak action="">
-											<!-- Form Fields -->
-											<div class="form-group">
-												<label class="control-label col-sm-2"> Id </label>
-												<div class="col-sm-9">
-													<input type="text" ng-bind-html="selectedObject().id"
-														ng-disabled="true" class="form-control" ng-cloak
-														id="obj3D-id" value="{{selectedObject3D().id}}">
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="control-label col-sm-2"> Name </label>
-												<div class="col-sm-9">
-													<textarea rm-elastic ng-model="selectedObject3D().name" ng-change="setSelObject3DDirty()" ng-cloak
-														class="form-control" id="obj3D-name">
-														{{selectedObject3D().name}}
-													</textarea>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="control-label col-sm-2"> Text </label>
-												<div class="col-sm-9">
-													<textarea rm-elastic ng-model="selectedObject3D().text" ng-change="setSelObject3DDirty()" ng-cloak
-														class="form-control" id="obj3D-text">
-														{{selectedObject3D().text}}
-													</textarea>
-												</div>
-											</div>
-										</form>
+										<div id="form-edit" ng-if="activeTabName=='attr'">
+											<rm-form form-model="formModel"></rm-form>
+										</div>
 									</div>
 									
 									<!-- Text Editor -->

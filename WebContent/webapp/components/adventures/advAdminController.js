@@ -395,7 +395,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					var res = $http.post(url, json);		
 				}
 				else {
-					var url = "http://" + + $scope.proxy.restServer + "/adventures/" + adventure.id;
+					var url = "http://" + $scope.proxy.restServer + "/adventures/" + adventure.id;
 					var res = $http.put(url, json);
 				}
 				console.log(res);
