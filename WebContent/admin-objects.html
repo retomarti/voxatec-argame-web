@@ -28,6 +28,10 @@
 <script src="./webapp/components/objects3D/objAdminController.js" type="text/javascript"></script>
 <script src="./webapp/shared/directives/forms.js" type="text/javascript"></script>
 
+<script src="https://rawgit.com/bsalex/angular-loading-overlay/master/dist/angular-loading-overlay.js"></script>
+<script src="https://rawgit.com/bsalex/angular-loading-overlay-spinjs/master/dist/angular-loading-overlay-spinjs.js"></script>
+<script src="https://rawgit.com/bsalex/angular-loading-overlay-http-interceptor/master/dist/angular-loading-overlay-http-interceptor.js"></script>
+
 <!-- 3D Model Viewer (three) -->
 <script src="./webapp/components/objects3D/three/three.js"></script>
 <script src="./webapp/components/objects3D/three/Detector.js"></script>
@@ -76,7 +80,7 @@
 	</nav>
 
 	<!-- Content Area ----------------------------------------------------------------------->
-	<div class="container-fluid full-height">
+	<div class="container-fluid full-height bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="pageBody">
 		<div class="content-area">
 			<!-- div class="container-fluid" -->
 
@@ -84,7 +88,7 @@
 				<!-- div class="row row-eq-height" --> 
 				
 					<div class="col-sm-4">
-						<div class="panel panel-default full-height">  <!-- panel-min-height -->
+						<div class="panel panel-default full-height bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="objectPanel">
 							<div class="panel-heading clearfix">
 								3D Objects
 							    <div class="pull-right">
@@ -156,7 +160,7 @@
 					</div>  <!-- Panel -->
 					
 					<div class="col-sm-8 browser-col">
-						<div class="panel panel-default full-height">
+						<div class="panel panel-default full-height bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="attrPanel">
 						
 							<div class="panel-heading clearfix">
 								Object Definition
@@ -193,7 +197,8 @@
 																
 							</div>
 							
-							<div class="panel-body panel-min-height">
+							<div class="panel-body panel-min-height bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="formBody">
+							
 								<!-- Object Viewer header (Tabs) ------------------------------------------------------->
 								<ul id="edit-nav-tabs" class="nav nav-tabs">
 									<li ng-class="{active: activeTabName=='attr'}" ng-click="setActiveTab('attr')"><a>Object Attributes</a></li>

@@ -26,6 +26,10 @@
 <script src="./webapp/shared/modules/angular.js" type="text/javascript"></script>
 <script src="./webapp/shared/modules/angular-sanitize.js" type="text/javascript"></script>
 <script src="./webapp/components/adventures/advAdminController.js" type="text/javascript"></script>
+
+<script src="https://rawgit.com/bsalex/angular-loading-overlay/master/dist/angular-loading-overlay.js"></script>
+<script src="https://rawgit.com/bsalex/angular-loading-overlay-spinjs/master/dist/angular-loading-overlay-spinjs.js"></script>
+<script src="https://rawgit.com/bsalex/angular-loading-overlay-http-interceptor/master/dist/angular-loading-overlay-http-interceptor.js"></script>
 </head>
 
 <body ng-controller="BrowserCtrl as ctrl">
@@ -66,14 +70,14 @@
 	</nav>
 
 	<!-- Content Area ---------------------------------------------------------------------->
-	<div class="container-fluid">
+	<div class="container-fluid bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="pageBody">
 		<div class="content-area">
 			<div class="container-fluid">
 
 				<!-- Object Browser -------------------------------------------------------->
 				<div class="row">
 					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">
+						<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="advPanel">
 							<div class="panel-heading clearfix">
 								Adventures
 							    <div class="pull-right">
@@ -144,7 +148,7 @@
 					</div>
 
 					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">
+						<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="storyPanel">
 							<div class="panel-heading clearfix">
 								Stories
 							    <div class="pull-right">
@@ -219,7 +223,7 @@
 					</div>
 
 					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">
+						<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="scenePanel">
 							<div class="panel-heading clearfix">
 								Scenes
 							    <div class="pull-right">
@@ -296,7 +300,7 @@
 
 				<!-- Selection Content ------------------------------------------------------------------------>
 				<div class="row content-form">
-					<div class="panel panel-default">
+					<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="formBody">
 					
 						<div class="panel-heading clearfix">
 							<span>{{selectedObjectType()}}</span>

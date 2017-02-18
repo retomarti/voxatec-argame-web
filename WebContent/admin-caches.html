@@ -28,6 +28,10 @@
 <script src="./webapp/components/caches/cacheAdminController.js" type="text/javascript"></script>
 <script src="./webapp/shared/directives/forms.js" type="text/javascript"></script>
 <script src="./webapp/shared/directives/fileUploadDialogs.js" type="text/javascript"></script>
+
+<script src="https://rawgit.com/bsalex/angular-loading-overlay/master/dist/angular-loading-overlay.js"></script>
+<script src="https://rawgit.com/bsalex/angular-loading-overlay-spinjs/master/dist/angular-loading-overlay-spinjs.js"></script>
+<script src="https://rawgit.com/bsalex/angular-loading-overlay-http-interceptor/master/dist/angular-loading-overlay-http-interceptor.js"></script>
 </head>
 
 <body ng-controller="CacheCtrl as ctrl">
@@ -68,14 +72,14 @@
 	</nav>
 
 	<!-- Content Area ---------------------------------------------------------------------->
-	<div class="container-fluid">
+	<div class="container-fluid bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="pageBody">
 		<div class="content-area">
 			<div class="container-fluid">
 
 				<!-- Object Browser -------------------------------------------------------->
 				<div class="row">
-					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">
+					<div class="col-sm-4 browser-col" >
+						<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="cityPanel">
 							<div class="panel-heading clearfix">
 								Cities
 							    <div class="pull-right">
@@ -146,7 +150,7 @@
 					</div>
 
 					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">
+						<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="cacheGroupPanel">
 							<div class="panel-heading clearfix">
 								Cache-Groups
 							    <div class="pull-right">
@@ -221,7 +225,8 @@
 					</div>
 
 					<div class="col-sm-4 browser-col">
-						<div class="panel panel-default">
+						<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="cachePanel">
+						
 							<div class="panel-heading clearfix">
 								Caches
 							    <div class="pull-right">
@@ -297,8 +302,9 @@
 				</div>
 
 				<!-- Selection Content ------------------------------------------------------------------------>
-				<div class="row content-form">
-					<div class="panel panel-default">
+					
+				<div class="row content-form" >
+					<div class="panel panel-default bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="formBody">
 					
 						<div class="panel-heading clearfix">
 							<span>{{selectedObjectType()}}</span>
@@ -320,7 +326,7 @@
 								<li ng-class="{active: activeTabName=='datfile'}" ng-if="selectedObjectType()=='CacheGroup'" ng-click="setActiveTab('datfile')"><a>Target Images DAT File</a></li>
 								<li ng-class="{active: activeTabName=='targetImgfile'}" ng-if="selectedObjectType()=='Cache'" ng-click="setActiveTab('targetImgfile')"><a>Target Image</a></li>
 	 							</ul>
-
+	 							
 							<!-- Attribute Form -->
 							<div id="form-edit" ng-if="activeTabName=='attr'">
 								<rm-form form-model="formModel"></rm-form>
@@ -339,7 +345,7 @@
 						
 					</div>
 				</div>
-				
+					
 			</div>
 			<!-- Container -->
 		</div>

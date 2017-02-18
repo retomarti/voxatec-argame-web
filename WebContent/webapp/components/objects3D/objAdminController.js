@@ -1,9 +1,9 @@
-var ARGameApp=angular.module("ARGameApp", ['ngSanitize','rmForms']);
+var ARGameApp=angular.module("ARGameApp", ['ngSanitize','rmForms','bsLoadingOverlay']);
 
 
 <!-- Browser Controller --------------------------------------------------------------------------------->
-ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
-	function($scope, $sce, $http) {
+ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http', 'bsLoadingOverlayService',
+	function($scope, $sce, $http, bsLoadingOverlayService) {
 	
 		<!-- Adventure Browser Model -->
 		$scope.proxy = null;
@@ -29,8 +29,26 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		
 		<!-- Methods ----------------------------------------------------------------------->
 		
+		// Overlay & spinner
+		$scope.showOverlay = 
+			function(referenceId) {
+				bsLoadingOverlayService.start({
+					referenceId: referenceId
+				});
+			};
+
+		$scope.hideOverlay = 
+			function(referenceId) {
+				bsLoadingOverlayService.stop({
+					referenceId: referenceId
+				});
+			}
+			
 		$scope.doInitRequest = 
 			function($http) {
+				// Show overlay & spinner
+				$scope.showOverlay("pageBody");
+			
 				// Get proxy definition
 				var url = "./webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
@@ -48,6 +66,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						$scope.object3DList = $scope.deepDecodeJSON(jsonResponse);
 						$scope.setSelectedObject3D($scope.object3DList[0]);
 						$scope.setActiveTab("attr");
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("pageBody");
 					});
 				
 				});
@@ -166,10 +187,16 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			function(object) {
 			
 				if (angular.isDefined(object) && object != null && object.id != -1) {
+					// Show overlay & spinner
+					$scope.showOverlay("formBody");
+					
 					// request obj file from service
 					var url = "http://" + $scope.proxy.restServer + "/files/obj/" + object.id;
 					$http.get(url).success(function(response) {
 						$scope.objFile = $scope.decodeHtml(response);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("formBody");
 					});
 
 					// request mtl file from service
@@ -229,22 +256,33 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						var json = angular.toJson(obj3D, false);
 						json = $scope.deepEncodeJSON(json);
 						
+						// Show overlay & spinner
+						$scope.showOverlay("formBody");
+						
 						if (obj3D.id == null || obj3D.id == -1) {
 							var url = "http://" + $scope.proxy.restServer + "/objects3D";
 
 							var res = $http.post(url, json)
-								.then(function(jsonResponse) {
-									// do we have to do something here
-								}, function errorCallback(response) {
-								    // called asynchronously if an error occurs
-								    // or server returns response with an error status.
-									console.log("error saving object3D: " + response);
-								}
+											.then(function(jsonResponse) {
+												// Hide overlay & spinner
+												$scope.hideOverlay("formBody");
+												
+											}, function errorCallback(response) {
+											    // called asynchronously if an error occurs
+											    // or server returns response with an error status.
+												console.log("error saving object3D: " + response);
+												// Hide overlay & spinner
+												$scope.hideOverlay("formBody");
+											}
 							);		
 						}
 						else {
 							var url = "http://" + $scope.proxy.restServer + "/objects3D/" + obj3D.id;
-							var res = $http.put(url, json);
+							var res = $http.put(url, json)
+											.then(function(jsonReponse) {
+												// Hide overlay & spinner
+												$scope.hideOverlay("formBody");
+											})
 						}
 	
 						$scope.setSelObject3DClean();
@@ -433,6 +471,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			
 		$scope.uploadTexImgFile =
 			function(fileName, imageData, fileType, object) {
+			
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
 
 				//send file to REST service
 				var imgFile = {"className": "File", "name": null, "mimeType": "image/*", "content": null};
@@ -450,17 +491,26 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						$scope.texFile = imgFile;
 						$scope.texFileList.push(imgFile);
 						$scope.selectedTex = imgFile;
+						
+						// Hide overlay & spinner
+						$scop.hideOverlay("formBody");
+						
 					}, function errorCallback(response) {
 					    // called asynchronously if an error occurs
 					    // or server returns response with an error status.
 						console.log("error uploading texture: " + response);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("formBody");
 					}
 				);
-				
 			};
 				
 		$scope.uploadTextFile =
 			function(fileName, fileData, fileType, object) {
+			
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
 				
 				//send file to REST service
 				var file = {"className": "File", "name": null, "mimeType": "application/json", "content": null};
@@ -484,7 +534,11 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				}
 				$scope.visibleFile = fileData;
 
-				var res = $http.put(url, file);  // why not post???
+				var res = $http.put(url, file)
+								.then(function(jsonResponse) {
+									// Hide overlay & spinner
+									$scope.hideOverlay("formBody");
+								});
 			};
 			
 		$scope.uploadVisibleFile =
@@ -535,6 +589,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				console.log("New object3D: " + object3DName);
 				$scope.resetSelection();
 				
+				// Show overlay & spinner
+				$scope.showOverlay("objectPanel");
+				
 				// create new object3D & insert it into objectList
 				object3D = new Object();
 				object3D.name = object3DName;
@@ -554,10 +611,17 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						$scope.objFile = null;
 						$scope.mtlFile = null;
 						$scope.texFile = null;
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("objectPanel");
+						
 					}, function errorCallback(response) {
 					    // called asynchronously if an error occurs
 					    // or server returns response with an error status.
 						console.log("error creating new object3D: " + response);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("objectPanel");
 					}
 				);
 	
@@ -571,6 +635,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			
 				if (object3D == null || object3D.id == -1)
 					return;   // nothing to do
+				
+				// Show overlay & spinner
+				$scope.showOverlay("objectPanel");
 			
 				// Delete via service
 				var url = "http://" + $scope.proxy.restServer + "/objects3D/" + object3D.id;
@@ -579,6 +646,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					var idx = $scope.object3DList.indexOf(object3D);
 					$scope.object3DList.splice(idx,1);
 					$scope.resetSelection();
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay("objectPanel");
 				});
 
 			};
@@ -590,6 +660,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				if (object3D == null || object3D.id == -1 || texFile == null)
 					return;   // nothing to do
 				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
+				
 				// Delete via service
 				var url = "http://" + $scope.proxy.restServer + "/mtl/" + object3D.id + "/" + texFile.name;
 				$http.delete(url)
@@ -597,14 +670,28 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						// remove texFile in texture list
 						var idx = $scope.texFileList.indexOf(texFile);
 						$scope.texFileList.splice(idx,1);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("formBody");
+						
 					}, function errorCallback(response) {
 					    // called asynchronously if an error occurs
 					    // or server returns response with an error status.
 						console.log("error deleting tex file: " + response);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("formBody");
 					} 
 				);
 			
-			};
-			
+			};	
 
 }])
+
+<!-- Directives ----------------------------------------------------------------------------------------->
+
+<!-- Directive to show spinner & overlay -->
+.run(function(bsLoadingOverlayService) {
+	bsLoadingOverlayService.setGlobalConfig({
+		templateUrl: './webapp/shared/directives/loading-overlay-template.html'
+})})

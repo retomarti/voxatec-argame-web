@@ -1,9 +1,9 @@
-var ARGameApp=angular.module("ARGameApp", ['ngSanitize','rmForms','rmFileUploadDialogs']);
+var ARGameApp=angular.module("ARGameApp", ['ngSanitize','rmForms','rmFileUploadDialogs','bsLoadingOverlay']);
 
 
 <!-- Browser Controller --------------------------------------------------------------------------------->
-ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
-	function($scope, $sce, $http) {
+ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http', 'bsLoadingOverlayService',
+	function($scope, $sce, $http, bsLoadingOverlayService) {
 	
 		<!-- Cache Browser Model -->		
 		$scope.proxy = null;
@@ -27,6 +27,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 		
 		<!-- Methods ----------------------------------------------------------------------->
 		
+		// JSON message methods
 		$scope.encodeHtml = 
 			function(string) {
 				return $('<div/>').text(string).html();
@@ -89,8 +90,26 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				return object;
 			};
 						
+		// Overlay & spinner
+		$scope.showOverlay = 
+			function(referenceId) {
+				bsLoadingOverlayService.start({
+					referenceId: referenceId
+				});
+			};
+
+		$scope.hideOverlay = 
+			function(referenceId) {
+				bsLoadingOverlayService.stop({
+					referenceId: referenceId
+				});
+			}
+			
 		$scope.doInitRequest = 
 			function($http) {
+				// Show overlay & spinner
+				$scope.showOverlay("pageBody");
+			
 				// Get proxy definition
 				var url = "./webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
@@ -106,6 +125,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						// Set browser selection
 						var sel = $scope.browserList[0][0];
 						$scope.setBrowserSelection(0, sel);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("pageBody");
 					});
 				});
 			};
@@ -113,6 +135,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 		// Do initial request for model
 		$scope.doInitRequest($http);
 		
+		// Object Selection
 		$scope.selectedObject =
 			function() {
 				i = 0;
@@ -139,6 +162,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					return null;
 			};
 			
+		// Form Model
 		$scope.setupFormModelForObject =
 			function(object) {
 				if (object.className == 'City') {
@@ -173,6 +197,11 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						.addNumberField('gpsLongitude', 'GPS long.', object.gpsLongitude, false)
 						.setActiveTab(0);
 				}
+			};
+			
+		$scope.resetFormModel = 
+			function() {
+				$scope.formModel = null;
 			};
 			
 		$scope.setupTargetImageForObject =
@@ -227,7 +256,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						}
 						else {
 							$scope.resetBrowserSelection();
-							$scope.resetFormList();
+							$scope.resetFormModel();
 						}
 					}
 					else {
@@ -281,15 +310,26 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				var json = angular.toJson(city, false);
 				json = $scope.deepEncodeJSON(json);
 				
+				// Show overlay & spinner
+				$scope.showOverlay('formBody');
+
 				if (city.id == null || city.id == -1) {
 					// New city -> POST
 					var url = "http://" + $scope.proxy.restServer + "/cities";
-					var res = $http.post(url, json);		
+					var res = $http.post(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+						            	$scope.hideOverlay('formBody');
+									});		
 				}
 				else {
 					// Existing city -> PUT
 					var url = "http://" + $scope.proxy.restServer + "/cities/" + city.id;
-					var res = $http.put(url, json);
+					var res = $http.put(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+						            	$scope.hideOverlay('formBody');
+									});
 				}
 				console.log(res);
 			};
@@ -299,15 +339,26 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				var json = angular.toJson(cacheGroup, false);
 				json = $scope.deepEncodeJSON(json);
 				
+				// Show overlay & spinner
+				$scope.showOverlay('formBody');
+
 				if (cacheGroup.id == null || cacheGroup.id == -1) {
 					// New cacheGroup -> POST
 					var url = "http://" + $scope.proxy.restServer + "/cache-groups";
-					var res = $http.post(url, json);					
+					var res = $http.post(url, json)
+									.then(function(jsonResponse) {
+										// Hide overlay & spinner
+						            	$scope.hideOverlay('formBody');
+									});
 				}
 				else {
 					// Existing cacheGroup -> PUT
 					var url = "http://" + $scope.proxy.restServer + "/cache-groups/" + cacheGroup.id;
-					var res = $http.put(url, json);
+					var res = $http.put(url, json)
+									.then(function(jsonRespone) {
+										// Hide overlay & spinner
+						            	$scope.hideOverlay('formBody');
+									});
 				}
 				console.log(res);
 			};
@@ -317,15 +368,26 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				var json = angular.toJson(cache, false);
 				json = $scope.deepEncodeJSON(json);
 				
+				// Show overlay & spinner
+				$scope.showOverlay('formBody');
+				
 				if (cache.id == null || cache.id == -1) {
 					// New cache -> POST
 					var url = "http://" + $scope.proxy.restServer + "/caches";
-					var res = $http.post(url, json);					
+					var res = $http.post(url, json)
+					               .then(function(jsonResponse) {
+					            	   // Hide overlay & spinner
+					            	   $scope.hideOverlay('formBody');
+									});					
 				}
 				else {
 					// Existing cache -> PUT
 					var url = "http://" + $scope.proxy.restServer + "/caches/" + cache.id;
-					var res = $http.put(url, json);
+					var res = $http.put(url, json)
+					               .then(function(jsonResponse) {
+					            	   // Hide overlay & spinner
+					            	   $scope.hideOverlay('formBody');
+									});					
 				}
 				console.log(res);
 			};
@@ -415,15 +477,22 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				city.country = '';
 				city.cacheGroupList = new Array();
 				
+				// Show spinner & overlay
+				$scope.showOverlay("cityPanel");
+				
 				// Post it to service
 				var url = "http://" + $scope.proxy.restServer + "/cities";
 				var json = $scope.deepEncodeJSON(city);
+				
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created city object
 					var newCity = $scope.deepDecodeJSON(jsonResponse).data;
 					city.id = newCity.id;
 					$scope.browserList[0].push(city);
 					$scope.setBrowserSelection(0, city);
+					
+					// Remove spinner & overlay
+					$scope.hideOverlay("cityPanel");
 				});
 	
 				// Clear dialog input
@@ -447,15 +516,22 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				cacheGroup.targetImageXmlFileName = '';
 				cacheGroup.cacheList = new Array();
 				
+				// Show overlay & spinner
+				$scope.showOverlay('cacheGroupPanel');
+				
 				// Post it to service
 				var url = "http://" + $scope.proxy.restServer + "/cache-groups";
 				var json = $scope.deepEncodeJSON(cacheGroup);
+				
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created cacheGroup object
 					var newCacheGroup = $scope.deepDecodeJSON(jsonResponse).data;
 					cacheGroup.id = newCacheGroup.id;
 					$scope.browserList[1].push(cacheGroup);
 					$scope.setBrowserSelection(1, cacheGroup);
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay('cacheGroupPanel');
 				});
 				
 				// Clear dialog input
@@ -480,15 +556,22 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				cache.gpsLongitude = 0.0000000;
 				cache.cacheGroupId = cacheGroup.id;
 				
+				// Show overlay & spinner
+				$scope.showOverlay('cachePanel');
+
 				// Post it to service
 				var url = "http://" + $scope.proxy.restServer + "/caches";
 				var json = $scope.deepEncodeJSON(cache);
+				
 				$http.post(url,json).then(function(jsonResponse) {
 					// extract new created cache object
 					var newCache = $scope.deepDecodeJSON(jsonResponse).data;
 					cache.id = newCache.id;
 					$scope.browserList[2].push(cache);
 					$scope.setBrowserSelection(2, cache);
+
+					// Hide overlay & spinner
+					$scope.hideOverlay('cachePanel');
 				});
 
 				// Clear dialog input
@@ -503,6 +586,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				imgFile.name = $scope.encodeHtml(fileName);
 				imgFile.content = $scope.encodeBase64(imageData);
 				var url = "http://" + $scope.proxy.restServer + "/files/target-img/" + object.id;
+				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
 
 				var res = $http.put(url, imgFile)
 					.then(function(jsonResponse) {
@@ -513,12 +599,17 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						$scope.targetImageURL = url;
 						$scope.targetImageFile = imgFile;
 						
+						// Hide overlay & spinner
+						$scope.hideOverlay("formBody");
+						
 					}, function errorCallback(response) {
 					    // called asynchronously if an error occurs
 					    // or server returns response with an error status.
 						console.log("error uploading target image: " + response);
-					}
-				);
+
+						// Hide overlay & spinner
+						$scope.hideOverlay("formBody");}
+					);
 				
 			};
 				
@@ -532,15 +623,23 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				xmlfile = $scope.deepEncodeJSON(xmlfile);	
 				var url = "http://" + $scope.proxy.restServer + "/files/target-xml/" + cacheGroup.id;
 				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
+				
 				var res = $http.put(url, xmlfile)
-				.then(function(jsonResponse) {
-
-				}, function errorCallback(response) {
-				    // called asynchronously if an error occurs
-				    // or server returns response with an error status.
-					console.log("error uploading target image dat file: " + response);
-				}
-			);
+								.then(function(jsonResponse) {
+									// Hide overlay & spinner
+									$scope.hideOverlay("formBody");
+				
+								}, function errorCallback(response) {
+								    // called asynchronously if an error occurs
+								    // or server returns response with an error status.
+									console.log("error uploading target image dat file: " + response);
+									
+									// Hide overlay & spinner
+									$scope.hideOverlay("formBody");
+								}
+								);
 			};
 			
 		$scope.uploadDatFile =
@@ -551,15 +650,23 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				datFile.name = $scope.encodeHtml(fileName);
 				datFile.content = $scope.encodeBase64(imageData);
 				var url = "http://" + $scope.proxy.restServer + "/files/target-dat/" + cacheGroup.id;
+				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
 
 				var res = $http.put(url, datFile)
-					.then(function(jsonResponse) {
-
-					}, function errorCallback(response) {
-					    // called asynchronously if an error occurs
-					    // or server returns response with an error status.
-						console.log("error uploading target image dat file: " + response);
-					}
+								.then(function(jsonResponse) {
+									// Hide overlay & spinner
+									$scope.hideOverlay("formBody");
+			
+								}, function errorCallback(response) {
+								    // called asynchronously if an error occurs
+								    // or server returns response with an error status.
+									console.log("error uploading target image dat file: " + response);
+									
+									// Hide overlay & spinner
+									$scope.hideOverlay("formBody");
+								}
 				);
 				
 			};
@@ -626,6 +733,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 			function(city) {
 			
 				deleteCityWithId = function(cityId) {
+					// Show spinner & overlay
+					$scope.showOverlay("cityPanel");
+					
 					// Delete city via service
 					var url = "http://" + $scope.proxy.restServer + "/cities/" + cityId;
 					$http.delete(url).then(function(jsonResponse) {
@@ -633,6 +743,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						var idx = $scope.browserList[0].indexOf(city);
 						$scope.browserList[0].splice(idx,1);
 						$scope.setBrowserSelection(0, null);
+						
+						// Hide spinner & overlay
+						$scope.hideOverlay("cityPanel");
 					});
 				};
 			
@@ -663,6 +776,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 			function(cacheGroup, callbackFct) {
 			
 				deleteCacheGroupWithId = function(cacheGroupId) {
+					// Show overlay & spinner
+					$scope.showOverlay("cacheGroupPanel");
+					
 					// Delete cacheGroup via service
 					var url = "http://" + $scope.proxy.restServer + "/cache-groups/" + cacheGroupId;
 					$http.delete(url).then(function(jsonResponse) {
@@ -674,6 +790,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 						// do callback
 						if (callbackFct != null)
 							callbackFct();
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("cacheGroupPanel");
 					});
 				};
 			
@@ -708,6 +827,9 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 				if (cache == null || cache.id == -1)
 					return;   // nothing to do
 				
+				// Show overlay & spinner
+				$scope.showOverlay("cachePanel");
+				
 				// Delete cache via service
 				var url = "http://" + $scope.proxy.restServer + "/caches/" + cache.id;
 				$http.delete(url).then(function(jsonResponse) {
@@ -718,8 +840,10 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 					
 					if (callbackFct != null)
 						callbackFct();
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay("cachePanel");
 				});
-
 			};
 						
 }])
@@ -727,6 +851,12 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http',
 
 <!-- Directives ----------------------------------------------------------------------------------------->
 
+<!-- Directive to show spinner & overlay -->
+.run(function(bsLoadingOverlayService) {
+	bsLoadingOverlayService.setGlobalConfig({
+		templateUrl: './webapp/shared/directives/loading-overlay-template.html'
+})})
+	
 <!-- Directive to autom. size height of a textarea element -->
 .directive('rmElastic', ['$timeout', function($timeout) {
 	return {

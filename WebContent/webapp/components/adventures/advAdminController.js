@@ -1,9 +1,9 @@
-var ARGameApp=angular.module("ARGameApp", ['ngSanitize']);
+var ARGameApp=angular.module("ARGameApp", ['ngSanitize','bsLoadingOverlay']);
 
 
 <!-- Browser Controller --------------------------------------------------------------------------------->
-ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
-	function($scope, $sce, $http) {
+ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http', 'bsLoadingOverlayService',
+	function($scope, $sce, $http, bsLoadingOverlayService) {
 	
 		<!-- Adventure Browser Model -->
 		$scope.proxy = null;
@@ -22,8 +22,26 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 		
 		<!-- Methods ----------------------------------------------------------------------->
 		
+		// Overlay & spinner
+		$scope.showOverlay = 
+			function(referenceId) {
+				bsLoadingOverlayService.start({
+					referenceId: referenceId
+				});
+			};
+
+		$scope.hideOverlay = 
+			function(referenceId) {
+				bsLoadingOverlayService.stop({
+					referenceId: referenceId
+				});
+			}
+			
 		$scope.doInitRequest = 
 			function($http) {
+				// Show overlay & spinner
+				$scope.showOverlay("pageBody");
+				
 				// Get proxy definition
 				var url = "./webapp/shared/config/proxy.json";
 				$http.get(url).success(function(jsonResponse) {
@@ -53,6 +71,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						// Set browser selection
 						var sel = $scope.browserList[0][0];
 						$scope.setBrowserSelection(0, sel);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("pageBody");
 					});
 
 				});
@@ -390,13 +411,24 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				var json = angular.toJson(adventure, false);
 				json = $scope.deepEncodeJSON(json);
 				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
+				
 				if (adventure.id == null || adventure.id == -1) {
 					var url = "http://" + $scope.proxy.restServer + "/adventures";
-					var res = $http.post(url, json);		
+					var res = $http.post(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+										$scope.hideOverlay("formBody");
+									});		
 				}
 				else {
 					var url = "http://" + $scope.proxy.restServer + "/adventures/" + adventure.id;
-					var res = $http.put(url, json);
+					var res = $http.put(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+										$scope.hideOverlay("formBody");
+									});
 				}
 				console.log(res);
 			};
@@ -406,13 +438,24 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				var json = angular.toJson(story, false);
 				json = $scope.deepEncodeJSON(json);
 				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
+				
 				if (story.id == null || story.id == -1) {
 					var url = "http://" + $scope.proxy.restServer + "/stories";
-					var res = $http.post(url, json);					
+					var res = $http.post(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+										$scope.hideOverlay("formBody");
+									});					
 				}
 				else {
 					var url = "http://" + $scope.proxy.restServer + "/stories/" + story.id;
-					var res = $http.put(url, json);
+					var res = $http.put(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+										$scope.hideOverlay("formBody");
+									});					
 				}
 				console.log(res);
 			};
@@ -422,13 +465,24 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				var json = angular.toJson(scene, false);
 				json = $scope.deepEncodeJSON(json);
 				
+				// Show overlay & spinner
+				$scope.showOverlay("formBody");
+				
 				if (scene.id == null || scene.id == -1) {
 					var url = "http://" + $scope.proxy.restServer + "/scenes";
-					var res = $http.post(url, json);					
+					var res = $http.post(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+										$scope.hideOverlay("formBody");
+									});					
 				}
 				else {
 					var url = "http://" + $scope.proxy.restServer + "/scenes/" + scene.id;
-					var res = $http.put(url, json);
+					var res = $http.put(url, json)
+									.then(function(jsonResponse){
+										// Hide overlay & spinner
+										$scope.hideOverlay("formBody");
+									});					
 				}
 				console.log(res);
 			};
@@ -505,6 +559,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				adventure.name = adventureName;
 				adventure.storyList = new Array();
 				
+				// Show overlay & spinner
+				$scope.showOverlay("advPanel");
+				
 				// Post it to service
 				var url = "http://" + $scope.proxy.restServer + "/adventures";
 				var json = $scope.deepEncodeJSON(adventure);
@@ -514,6 +571,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					adventure.id = newAdventure.id;
 					$scope.browserList[0].push(adventure);
 					$scope.setBrowserSelection(0, adventure);
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay("advPanel");
 				});
 	
 				// Clear dialog input
@@ -537,6 +597,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				story.seqNr = len + 1;
 				story.sceneList = new Array();
 				
+				// Show overlay & spinner
+				$scope.showOverlay("storyPanel");
+				
 				// Post it to service
 				var url = "http://" + $scope.proxy.restServer + "/stories";
 				var json = $scope.deepEncodeJSON(story);
@@ -546,6 +609,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					story.id = newStory.id;
 					$scope.browserList[1].push(story);
 					$scope.setBrowserSelection(1, story);
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay("storyPanel");
 				});
 				
 				// Clear dialog input
@@ -564,6 +630,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				var scene = (JSON.parse(JSON.stringify(scenePrototype)));	// clone prototype instance
 				var len = $scope.browserList[2].length;
 				
+				// Show overlay & spinner
+				$scope.showOverlay("scenePanel");
+				
 				scene.name = sceneName;
 				scene.storyId = story.id;
 				scene.seqNr = len + 1;
@@ -579,6 +648,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					scene.id = newScene.id;
 					$scope.browserList[2].push(scene);
 					$scope.setBrowserSelection(2, scene);
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay("scenePanel");
 				});
 
 				// Clear dialog input
@@ -589,6 +661,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			function(adventure) {
 			
 				deleteAdventureWithId = function(adventureId) {
+					// Show overlay & spinner
+					$scope.showOverlay("advPanel");
+					
 					// Delete adventure via service
 					var url = "http://" + $scope.proxy.restServer + "/adventures/" + adventureId;
 					$http.delete(url).then(function(jsonResponse) {
@@ -596,6 +671,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						var idx = $scope.browserList[0].indexOf(adventure);
 						$scope.browserList[0].splice(idx,1);
 						$scope.setBrowserSelection(0, null);
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("advPanel");
 					});
 				};
 			
@@ -626,6 +704,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 			function(story, callbackFct) {
 			
 				deleteStoryWithId = function(storyId) {
+					// Show overlay & spinner
+					$scope.showOverlay("storyPanel");
+					
 					// Delete story via service
 					var url = "http://" + $scope.proxy.restServer + "/stories/" + storyId;
 					$http.delete(url).then(function(jsonResponse) {
@@ -637,6 +718,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 						// do callback
 						if (callbackFct != null)
 							callbackFct();
+						
+						// Hide overlay & spinner
+						$scope.hideOverlay("storyPanel");
 					});
 				};
 			
@@ -671,6 +755,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 				if (scene == null || scene.id == -1)
 					return;   // nothing to do
 				
+				// Show overlay & spinner
+				$scope.showOverlay("scenePanel");
+				
 				// Delete via service
 				var url = "http://" + $scope.proxy.restServer + "/scenes/" + scene.id;
 				$http.delete(url).then(function(jsonResponse) {
@@ -681,6 +768,9 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 					
 					if (callbackFct != null)
 						callbackFct();
+					
+					// Hide overlay & spinner
+					$scope.hideOverlay("scenePanel");
 				});
 
 			};
@@ -689,6 +779,12 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http',
 
 
 <!-- Directives ----------------------------------------------------------------------------------------->
+
+<!-- Directive to show spinner & overlay -->
+.run(function(bsLoadingOverlayService) {
+	bsLoadingOverlayService.setGlobalConfig({
+		templateUrl: './webapp/shared/directives/loading-overlay-template.html'
+})})
 
 <!-- Directive to autom. size height of a textarea element -->
 .directive('rmElastic', ['$timeout', function($timeout) {
