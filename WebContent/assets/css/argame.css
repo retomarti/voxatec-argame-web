@@ -13,7 +13,7 @@ body {
   Navigation Bar
 -----------------------------------------------------*/
 .navbar-inverse {
-    background-color: #252b58;
+    background-color: #205081; /*#252b58;*/
     border-color: #080808;
 }
 
@@ -54,11 +54,11 @@ body {
 }
 
 .selected {
-	background-color: #d9daff;
+	background-color: #cedeef;
 }
 
 .panel {
-	border-radius: 0px;
+	border-radius: 4px;
 }
 
 .panel-default {
@@ -67,9 +67,9 @@ body {
 }
 
 .panel-default>.panel-heading {
-    color: white;
-    background-color: #a1a6d0;
-    border-color: #9aa1bb;
+    color: #205081;
+    background-color: #adc9e4; /*#799ec3;*/
+    border-color: #959cb3;
 }
 
 .panel-fixed {
@@ -88,6 +88,7 @@ body {
 	padding: 5px 15px;
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
+	font-weight: bold;
 }
 
 .panel-body {
