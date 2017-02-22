@@ -493,7 +493,7 @@ ARGameApp.controller('BrowserCtrl', ['$scope', '$sce', '$http', 'bsLoadingOverla
 						$scope.selectedTex = imgFile;
 						
 						// Hide overlay & spinner
-						$scop.hideOverlay("formBody");
+						$scope.hideOverlay("formBody");
 						
 					}, function errorCallback(response) {
 					    // called asynchronously if an error occurs

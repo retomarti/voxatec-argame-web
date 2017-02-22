@@ -4,9 +4,10 @@
   General Styles
 -----------------------------------------------------*/
 body {
-	background-color: #f9f9f9;
+	background-color: #eee;
 	font-family: 'Helvetica-neue', sans-serif;
 	font-weight: lighter;
+	height: 100vh;
 }
 
 /*-----------------------------------------------------
@@ -44,6 +45,14 @@ body {
     height:100%;
 }
 
+.full-height {
+	height: 100%;
+}
+
+.full-width {
+	width: 100%;
+}
+
 
 /*-----------------------------------------------------
   Object Browser
@@ -54,7 +63,7 @@ body {
 }
 
 .selected {
-	background-color: #cedeef;
+	background-color: #e9f4ff;
 }
 
 .panel {
@@ -69,7 +78,8 @@ body {
 .panel-default>.panel-heading {
     color: #205081;
     background-color: #adc9e4; /*#799ec3;*/
-    border-color: #959cb3;
+    border-color: #8891b1;
+	font-weight: bold;
 }
 
 .panel-fixed {
@@ -86,9 +96,8 @@ body {
 
 .panel-heading {
 	padding: 5px 15px;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	font-weight: bold;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 .panel-body {
@@ -96,6 +105,8 @@ body {
 }
 
 .rm-btn-action {
+	padding-top: 2px;
+    padding-bottom: 2px;
 	border-color: #9898a5;
 	background-color: #f0f0f1;
 	color: #585969;
@@ -140,6 +151,16 @@ body {
     padding-right: 20px;
 }
 
+.content-panel-fixed {
+	min-height: 220px;
+	max-height: 220px;
+	overflow-y: auto;
+	padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 .nav-tabs {
     margin-bottom: 20px;
 }
@@ -149,8 +170,12 @@ body {
 	padding-right: 5px;
 }
 
+label.control-label {
+	font-weight: 400;
+}
+
 input.ng-dirty {
-	background-color: #d9daff;
+	background-color: #e9f4ff;
 }
 
 textarea.form-control {
@@ -158,7 +183,7 @@ textarea.form-control {
 }
 
 textarea.ng-dirty {
-	background-color: #d9daff;
+	background-color: #e9f4ff;
 }
 
 
@@ -177,7 +202,7 @@ textarea.ng-dirty {
 -----------------------------------------------------*/
 
 .modal-header {
-    background-color: #606186;
+    background-color: #205081;
     color: #ffffff;
 }
 

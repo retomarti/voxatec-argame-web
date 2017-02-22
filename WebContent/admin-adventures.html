@@ -52,7 +52,7 @@
 					<li class="active"><a href="#">Adventures</a></li>
 					<li><a href="admin-objects.html">Objects</a></li>
 					<li><a href="admin-caches.html">Caches</a></li>
-					<li><a href="#localisation">Localisation</a></li>
+					<li><a href="admin-localisation.html">Localisation</a></li>
 				</ul>
 				<!-- 
 				<div class="pull-right">
@@ -70,7 +70,7 @@
 	</nav>
 
 	<!-- Content Area ---------------------------------------------------------------------->
-	<div class="container-fluid bs-loading-container" bs-loading-overlay bs-loading-overlay-reference-id="pageBody">
+	<div class="container-fluid bs-loading-container full-height" bs-loading-overlay bs-loading-overlay-reference-id="pageBody">
 		<div class="content-area">
 			<div class="container-fluid">
 
@@ -324,7 +324,7 @@
 								<div class="form-group" ng-if="objectLayoutRule(formObjectList[activeFormNr()]) == 'showSelector'">
 									<label class="control-label col-sm-2"> Selected Object </label>
 									<div class="dropdown col-sm-9">
-										<button class="btn btn-primary dropdown-toggle" type="button" ng-cloak
+										<button class="btn btn-default dropdown-toggle full-width" type="button" ng-cloak
 											data-toggle="dropdown">
 											{{formObjectList[activeFormNr()].name}}
 											<span class="caret"></span>

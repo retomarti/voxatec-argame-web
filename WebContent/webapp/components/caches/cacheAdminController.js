@@ -192,6 +192,7 @@ ARGameApp.controller('CacheCtrl', ['$scope', '$sce', '$http', 'bsLoadingOverlayS
 						.addStringField('name', 'Name', object.name, false)
 						.addTextField('text', 'Text', object.text, false)
 						.addStringField('street', 'Street', object.street, false)
+						.addNumberField('targetWidth', 'Target Width', object.targetWidth, false)
 						.addStringField('targetImageName', 'Target Image Name', object.targetImageName, false)
 						.addNumberField('gpsLatitude', 'GPS lat.', object.gpsLatitude, false)
 						.addNumberField('gpsLongitude', 'GPS long.', object.gpsLongitude, false)
